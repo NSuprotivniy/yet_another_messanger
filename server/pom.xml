@@ -23,6 +23,13 @@
             <version>2.8.5</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/me.prettyprint/hector-core -->
+        <dependency>
+            <groupId>me.prettyprint</groupId>
+            <artifactId>hector-core</artifactId>
+            <version>1.0-5</version>
+        </dependency>
+
     </dependencies>
 
 
