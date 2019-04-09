@@ -35,13 +35,14 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject params = new JSONObject();
                 String result = null;
                 try {
-                    postData.put("id", "0");
+                    params.put("name","new chat");
+                    postData.put("id", "1234");
                     postData.put("jsonrpc", "2.0");
-                    postData.put("method", "abc");
+                    postData.put("method", "creat_chat");
                     postData.put("params", params);
                     SendJSON sender = new SendJSON();
                     try{
-                        result = sender.execute("http://192.168.0.109:8080/chat", postData.toString()).get();
+                        result = sender.execute("http://192.168.0.106:8080/chat", postData.toString()).get();
                     }catch (ExecutionException e)
                     {
                         Answer.setText("Error");
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             try {
 
                 httpURLConnection = (HttpURLConnection) new URL(params[0]).openConnection();
-                httpURLConnection.setRequestMethod("GET");
+                httpURLConnection.setRequestMethod("POST");
 
                 httpURLConnection.setDoOutput(true);
 

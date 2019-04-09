@@ -25,7 +25,7 @@
         android:layout_marginTop="154dp"
         android:layout_marginEnd="162dp"
         android:layout_marginBottom="154dp"
-        android:text="Chat"
+        android:text="Create chat"
         app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
