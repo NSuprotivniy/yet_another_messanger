@@ -1,0 +1,6 @@
+version: '3.3'
+services:
+  messanger:
+    image: messanger
+    ports:
+      - "8080:8080"
