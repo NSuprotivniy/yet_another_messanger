@@ -1,5 +1,7 @@
 package models;
 
+import wrappers.user.UserCreateParams;
+
 import java.util.List;
 
 public class User implements Model {
@@ -10,6 +12,10 @@ public class User implements Model {
     public User(String name, String email) {
         this.name = name;
         this.email = email;
+    }
+
+    public User(UserCreateParams params) {
+        this(params.getName(), params.getEmail());
     }
 
     public User(String name, String email, List<Chat> chats) {

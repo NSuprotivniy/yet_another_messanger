@@ -1,20 +1,21 @@
-package handlers.chat;
+package handlers.user;
 
 import com.google.gson.Gson;
 import dao.database.CassandraChat;
+import dao.database.CassandraUser;
 import handlers.RESTHandler;
-import models.Chat;
+import models.User;
 import one.nio.http.Request;
 import one.nio.http.Response;
-import wrappers.chat.ChatCreateRequest;
 import wrappers.chat.EmptyChatRequest;
+import wrappers.user.UserCreateRequest;
 
-public class ChatHandler extends RESTHandler {
+public class UserHandler extends RESTHandler {
 
-    private final CassandraChat cassandraChat;
+    private final CassandraUser cassandraUser;
 
-    public ChatHandler() {
-        this.cassandraChat = CassandraChat.getInstance();
+    public UserHandler() {
+        this.cassandraUser = CassandraUser.getInstance();
     }
 
     @Override
@@ -23,16 +24,16 @@ public class ChatHandler extends RESTHandler {
         Gson gson = new Gson();
         EmptyChatRequest jsonRpcRequest = gson.fromJson(body, EmptyChatRequest.class);
         String method = jsonRpcRequest.getMethod();
-        return Response.ok(String.format("Chat##create##%s\n", method));
+        return Response.ok(String.format("Chat##get##%s\n", method));
     }
 
     @Override
     protected Response create(Request request) {
         String body = new String(request.getBody());
         Gson gson = new Gson();
-        ChatCreateRequest jsonRpcRequest = gson.fromJson(body, ChatCreateRequest.class);
-        Chat chat = new Chat(jsonRpcRequest.getParams());
-        cassandraChat.update(chat);
+        UserCreateRequest jsonRpcRequest = gson.fromJson(body, UserCreateRequest.class);
+        User chat = new User(jsonRpcRequest.getParams());
+        cassandraUser.update(chat);
         return Response.ok("Created");
     }
 
