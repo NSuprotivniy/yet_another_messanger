@@ -1,0 +1,1 @@
+echo $(openssl rand -base64 32) >> password_salt
