@@ -3,12 +3,11 @@ package wrappers.user;
 import wrappers.JsonRPCRequestWrapper;
 
 public class UserCreateSuccessReply extends JsonRPCRequestWrapper {
-    private final String METHOD = "user_create";
     private UserCreateSuccessReplyParams params;
 
     public UserCreateSuccessReply(String uuid) {
         this.params = new UserCreateSuccessReplyParams(uuid);
-        super.method = METHOD;
+        super.method = "user_create";
     }
 
     public UserCreateSuccessReplyParams getParams() {
