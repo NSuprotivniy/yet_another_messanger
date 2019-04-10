@@ -9,6 +9,7 @@ import one.nio.http.Request;
 import one.nio.http.Response;
 import wrappers.chat.EmptyChatRequest;
 import wrappers.user.UserCreateRequest;
+import wrappers.user.UserCreateSuccessReply;
 
 public class UserHandler extends RESTHandler {
 
@@ -33,8 +34,9 @@ public class UserHandler extends RESTHandler {
         Gson gson = new Gson();
         UserCreateRequest jsonRpcRequest = gson.fromJson(body, UserCreateRequest.class);
         User chat = new User(jsonRpcRequest.getParams());
-        cassandraUser.update(chat);
-        return Response.ok("Created");
+        String uuid = cassandraUser.update(chat);
+        UserCreateSuccessReply userCreateSuccessReply = new UserCreateSuccessReply(uuid);
+        return Response.ok(gson.toJson(userCreateSuccessReply));
     }
 
     @Override

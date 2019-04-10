@@ -5,7 +5,7 @@ public abstract class JsonRPCRequestWrapper {
 
     private long id = 0;
     private String jsonrpc = JSON_RPC_VERSION;
-    private String method = null;
+    protected String method = null;
 
     public long getId() {
         return id;

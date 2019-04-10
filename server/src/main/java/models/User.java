@@ -1,7 +1,7 @@
 package models;
 
 import security.utils.PasswordHasher;
-import wrappers.user.UserCreateParams;
+import wrappers.user.UserCreateRequest.UserCreateParams;
 
 import java.util.List;
 
