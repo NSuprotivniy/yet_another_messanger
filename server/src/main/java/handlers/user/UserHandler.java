@@ -1,15 +1,14 @@
 package handlers.user;
 
 import com.google.gson.Gson;
-import dao.database.CassandraChat;
 import dao.database.CassandraUser;
 import handlers.RESTHandler;
+import handlers.utils.Utils;
 import models.User;
 import one.nio.http.Request;
 import one.nio.http.Response;
 import wrappers.chat.EmptyChatRequest;
-import wrappers.user.UserCreateRequest;
-import wrappers.user.UserCreateSuccessReply;
+import wrappers.user.*;
 
 public class UserHandler extends RESTHandler {
 
@@ -23,9 +22,17 @@ public class UserHandler extends RESTHandler {
     protected Response get(Request request) {
         String body = new String(request.getBody());
         Gson gson = new Gson();
-        EmptyChatRequest jsonRpcRequest = gson.fromJson(body, EmptyChatRequest.class);
-        String method = jsonRpcRequest.getMethod();
-        return Response.ok(String.format("Chat##get##%s\n", method));
+        UserGetRequest jsonRpcRequest = gson.fromJson(body, UserGetRequest.class);
+        String uuid = jsonRpcRequest.getParams().getUuid();
+        if (Utils.fieldIsBlank(uuid)) {
+            return new Response(Response.BAD_REQUEST, gson.toJson(UserErrorResponse.invalidFieldFormat("uuid")).getBytes());
+        }
+        User user = cassandraUser.get(uuid);
+        if (user == null) {
+            return new Response(Response.NOT_FOUND, gson.toJson(UserErrorResponse.notFound(uuid)).getBytes());
+        }
+        UserGetResponseSuccess responseSuccess = new UserGetResponseSuccess(user.getName(), user.getEmail());
+        return Response.ok(gson.toJson(responseSuccess));
     }
 
     @Override
@@ -33,27 +40,66 @@ public class UserHandler extends RESTHandler {
         String body = new String(request.getBody());
         Gson gson = new Gson();
         UserCreateRequest jsonRpcRequest = gson.fromJson(body, UserCreateRequest.class);
-        User chat = new User(jsonRpcRequest.getParams());
-        String uuid = cassandraUser.update(chat);
-        UserCreateSuccessReply userCreateSuccessReply = new UserCreateSuccessReply(uuid);
-        return Response.ok(gson.toJson(userCreateSuccessReply));
+        UserCreateRequest.UserCreateParams params = jsonRpcRequest.getParams();
+        boolean nameEmpty = Utils.fieldIsBlank(params.getName());
+        boolean emailEmpty = Utils.fieldIsBlank(params.getEmail());
+        boolean passwordEmpty = Utils.fieldIsBlank(params.getPassword());
+        if (nameEmpty || emailEmpty || passwordEmpty) {
+            String emptyFields = Utils.blankFieldToString(new String[]{"name", "email", "password"},
+                    new boolean[]{nameEmpty, emailEmpty, passwordEmpty});
+            return new Response(Response.BAD_REQUEST, gson.toJson(UserErrorResponse.invalidFieldFormat(emptyFields)).getBytes());
+        }
+        User user = new User(params);
+        String uuid = cassandraUser.update(user);
+        if (uuid == null) {
+            return new Response(Response.INTERNAL_ERROR, gson.toJson(UserErrorResponse.unknown()).getBytes());
+        }
+        UserCreateResponseSuccess userCreateResponseSuccess = new UserCreateResponseSuccess(uuid);
+        return Response.ok(gson.toJson(userCreateResponseSuccess));
     }
 
     @Override
     protected Response edit(Request request) {
         String body = new String(request.getBody());
         Gson gson = new Gson();
-        EmptyChatRequest jsonRpcRequest = gson.fromJson(body, EmptyChatRequest.class);
-        String method = jsonRpcRequest.getMethod();
-        return Response.ok(String.format("Chat##edit##%s\n", method));
+        UserUpdateRequest jsonRpcRequest = gson.fromJson(body, UserUpdateRequest.class);
+        UserUpdateRequest.UserUpdateRequestParams params = jsonRpcRequest.getParams();
+        if (params.getUuid() == null)  {
+            return new Response(Response.BAD_REQUEST, gson.toJson(UserErrorResponse.invalidFieldFormat("uuid")).getBytes());
+        }
+        boolean nameEmpty = Utils.fieldIsBlank(params.getName());
+        boolean emailEmpty = Utils.fieldIsBlank(params.getEmail());
+        boolean passwordEmpty = Utils.fieldIsBlank(params.getPassword());
+        if (nameEmpty || emailEmpty || passwordEmpty)  {
+            return new Response(Response.BAD_REQUEST, gson.toJson(UserErrorResponse.invalidFieldFormat("name, email, password")).getBytes());
+        }
+        User user = cassandraUser.get(params.getUuid());
+        if (user == null) {
+            return new Response(Response.NOT_FOUND, gson.toJson(UserErrorResponse.notFound(params.getUuid())).getBytes());
+        }
+        user.setName(params.getName())
+                .setEmail(params.getEmail())
+                .setPassword(params.getPassword());
+        String uuid = cassandraUser.update(user);
+        if (uuid == null) {
+            return new Response(Response.INTERNAL_ERROR, gson.toJson(UserErrorResponse.unknown()).getBytes());
+        }
+        return Response.ok(gson.toJson(new UserUpdateResponseSuccess(uuid)));
     }
 
     @Override
     protected Response delete(Request request) {
         String body = new String(request.getBody());
         Gson gson = new Gson();
-        EmptyChatRequest jsonRpcRequest = gson.fromJson(body, EmptyChatRequest.class);
-        String method = jsonRpcRequest.getMethod();
-        return Response.ok(String.format("Chat##delete##%s\n", method));
+        UserDeleteRequest jsonRpcRequest = gson.fromJson(body, UserDeleteRequest.class);
+        UserDeleteRequest.UserDeleteRequestParams params = jsonRpcRequest.getParams();
+        if (params.getUuid() == null)  {
+            return new Response(Response.BAD_REQUEST, gson.toJson(UserErrorResponse.invalidFieldFormat("uuid")).getBytes());
+        }
+        boolean success = cassandraUser.delete(params.getUuid());
+        if (success == false) {
+            return new Response(Response.INTERNAL_ERROR, gson.toJson(UserErrorResponse.unknown()).getBytes());
+        }
+        return Response.ok(gson.toJson(new UserDeleteResponseSuccess(params.getUuid())));
     }
 }

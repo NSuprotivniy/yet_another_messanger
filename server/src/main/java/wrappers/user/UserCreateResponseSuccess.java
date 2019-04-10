@@ -2,10 +2,10 @@ package wrappers.user;
 
 import wrappers.JsonRPCRequestWrapper;
 
-public class UserCreateSuccessReply extends JsonRPCRequestWrapper {
+public class UserCreateResponseSuccess extends JsonRPCRequestWrapper {
     private UserCreateSuccessReplyParams params;
 
-    public UserCreateSuccessReply(String uuid) {
+    public UserCreateResponseSuccess(String uuid) {
         this.params = new UserCreateSuccessReplyParams(uuid);
         super.method = "user_create";
     }

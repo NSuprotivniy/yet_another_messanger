@@ -30,6 +30,7 @@ public class CassandraUser extends Cassandra {
     public CassandraUser(String clusterName, String host) throws FileNotFoundException {
         super(CHAT_COL_FAMILY, clusterName, host);
     }
+
     public String update(User user) {
         try {
             String uuid = TimeUUIDUtils.getUniqueTimeUUIDinMillis().toString();

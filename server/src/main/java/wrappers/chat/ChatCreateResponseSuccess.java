@@ -2,10 +2,10 @@ package wrappers.chat;
 
 import wrappers.JsonRPCRequestWrapper;
 
-public class ChatCreateSuccessReply extends JsonRPCRequestWrapper {
+public class ChatCreateResponseSuccess extends JsonRPCRequestWrapper {
     private ChatCreateSuccessReplyParams params;
 
-    public ChatCreateSuccessReply(String uuid) {
+    public ChatCreateResponseSuccess(String uuid) {
         this.params = new ChatCreateSuccessReplyParams(uuid);
         super.method = "chat_create";
     }

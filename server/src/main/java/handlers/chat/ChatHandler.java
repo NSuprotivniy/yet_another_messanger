@@ -7,7 +7,7 @@ import models.Chat;
 import one.nio.http.Request;
 import one.nio.http.Response;
 import wrappers.chat.ChatCreateRequest;
-import wrappers.chat.ChatCreateSuccessReply;
+import wrappers.chat.ChatCreateResponseSuccess;
 import wrappers.chat.EmptyChatRequest;
 
 public class ChatHandler extends RESTHandler {
@@ -34,7 +34,7 @@ public class ChatHandler extends RESTHandler {
         ChatCreateRequest jsonRpcRequest = gson.fromJson(body, ChatCreateRequest.class);
         Chat chat = new Chat(jsonRpcRequest.getParams());
         String uuid = cassandraChat.update(chat);
-        ChatCreateSuccessReply chatCreateSuccessReply = new ChatCreateSuccessReply(uuid);
+        ChatCreateResponseSuccess chatCreateSuccessReply = new ChatCreateResponseSuccess(uuid);
         return Response.ok(gson.toJson(chatCreateSuccessReply));
     }
 

@@ -42,11 +42,28 @@ public class User implements Model {
         return email;
     }
 
-    public List<Chat> getChats() {
-        return chats;
-    }
-
     public String getPasswordDigest() {
         return passwordDigest;
+    }
+
+    public User setName(String name) {
+        if (name != null) {
+            this.name = name;
+        }
+        return this;
+    }
+
+    public User setEmail(String email) {
+        if (email != null) {
+            this.email = email;
+        }
+        return this;
+    }
+
+    public User setPassword(String password) {
+        if (password != null) {
+            this.passwordDigest = passwordHasher.hash(password);
+        }
+        return this;
     }
 }
