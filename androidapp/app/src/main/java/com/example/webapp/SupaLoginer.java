@@ -1,0 +1,91 @@
+package com.example.webapp;
+
+import android.content.Context;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.concurrent.ExecutionException;
+
+public class SupaLoginer
+{
+    private String login, password;
+    private Context context;
+
+    public SupaLoginer(String login, String password,  Context context)
+    {
+        this.login = login;
+        this.password = password;
+        this.context = context;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String TryToLogin()
+    {
+        JSONObject postData = new JSONObject();
+        JSONObject params = new JSONObject();
+        String result = null;
+        try {
+            postData.put("id", "1234");
+            postData.put("jsonrpc", "2.0");
+            postData.put("method", "creat_user");
+
+            params.put("email",this.login);
+            params.put("password",this.password);
+
+            postData.put("params", params);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+        SendJSON sender = new SendJSON();
+        try{
+            result = sender.execute("http://192.168.0.107:8080/auth", postData.toString(), "POST").get();
+        }catch (InterruptedException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        catch(ExecutionException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        String uuid = null;
+        if (result.length() > 4)//на случай, если там код, а не тело
+        {
+            JSONObject recievedData, params_json;
+
+            try {
+                recievedData = new JSONObject(result);
+                params_json = recievedData.getJSONObject("params");
+                uuid = params_json.getString("uuid");
+
+            }catch (JSONException e)
+            {
+                e.printStackTrace();
+                return null;
+            }
+            TockenMaster tockenMaster = new TockenMaster();
+            //String prov = tockenMaster.readFromFile(Register.this);
+            tockenMaster.writeToFile(uuid);
+        }
+        return uuid;
+    }
+}

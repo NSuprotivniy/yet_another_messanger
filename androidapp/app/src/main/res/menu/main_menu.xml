@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="menu_view">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/new_chat"
+            android:icon="@drawable/ic_mail"
+            android:title="New chat" />
+        <item android:id="@+id/go_to_account"
+            android:icon="@drawable/ic_account"
+            android:title="Friends" />
+    </group>
+
+</menu>

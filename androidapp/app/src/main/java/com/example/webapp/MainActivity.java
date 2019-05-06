@@ -1,114 +1,178 @@
 package com.example.webapp;
 
-import android.os.AsyncTask;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.text.method.PasswordTransformationMethod;
+import android.view.View;
+import android.widget.Button;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Button;
-import com.android.volley.RequestQueue;
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.concurrent.ExecutionException;
-
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView Answer;
-    private  RequestQueue queue;
+
+    private static final int PERMISSION_REQUEST_CODE = 123;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Button CharButton;
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        CharButton = findViewById(R.id.ChatButton);
-        Answer = findViewById(R.id.textView);
-        CharButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                JSONObject postData = new JSONObject();
-                JSONObject params = new JSONObject();
-                String result = null;
-                try {
-                    params.put("name","new chat");
-                    postData.put("id", "1234");
-                    postData.put("jsonrpc", "2.0");
-                    postData.put("method", "creat_chat");
-                    postData.put("params", params);
-                    SendJSON sender = new SendJSON();
-                    try{
-                        result = sender.execute("http://192.168.0.106:8080/chat", postData.toString()).get();
-                    }catch (ExecutionException e)
-                    {
-                        Answer.setText("Error");
-                        return;
-                    }catch (InterruptedException e)
-                    {
-                        Answer.setText("Error");
-                    }
+        if (hasPermissions() == false) {
+            requestPerms();
+        } else {
+            main_activity();
+        }
+    }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Answer.setText("Error");
-                    return;
+    public void main_activity() {
+        setContentView(R.layout.activity_main);
+        Button LoginButton, RegisterButton;
+        CheckBox VisiblePassword;
+
+        String is_logined = null;
+        TockenMaster tockenMaster = new TockenMaster();
+        tockenMaster.DeleteThoken();
+        is_logined = tockenMaster.readFromFile();
+        if (is_logined != null) {
+            open_main_menu(is_logined);
+        }
+
+
+        LoginButton = findViewById(R.id.loginButton);
+        RegisterButton = findViewById(R.id.register_button);
+        VisiblePassword = findViewById(R.id.show_password);
+        final EditText Password;
+        Password = findViewById(R.id.password);
+
+        VisiblePassword.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Password.setTransformationMethod(null);
+                } else {
+                    Password.setTransformationMethod(new PasswordTransformationMethod());
                 }
-                Answer.setText(result);
             }
         });
 
-    }
+        LoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final EditText Login, Password;
+                String login, password;
 
-    private class SendJSON extends AsyncTask<String, Void, String> {
+                Login = findViewById(R.id.Login_register);
+                Password = findViewById(R.id.password);
 
-        @Override
-        protected String doInBackground(String... params) {
+                login = Login.getText().toString();
+                password = Password.getText().toString();
 
-            String data = "";
+                //authorize request
 
-            HttpURLConnection httpURLConnection = null;
-            try {
+                SupaLoginer loginer = new SupaLoginer(login, password, MainActivity.this);
+                String uuid = loginer.TryToLogin();
 
-                httpURLConnection = (HttpURLConnection) new URL(params[0]).openConnection();
-                httpURLConnection.setRequestMethod("POST");
-
-                httpURLConnection.setDoOutput(true);
-
-                DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
-                wr.writeBytes( params[1]);
-                wr.flush();
-                wr.close();
-
-                InputStream in = httpURLConnection.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(in);
-
-                int inputStreamData = inputStreamReader.read();
-                while (inputStreamData != -1) {
-                    char current = (char) inputStreamData;
-                    inputStreamData = inputStreamReader.read();
-                    data += current;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (httpURLConnection != null) {
-                    httpURLConnection.disconnect();
+                if (uuid != null) {
+                    open_main_menu(uuid);
                 }
             }
+        });
+        RegisterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                open_register_menu();
+            }
+        });
+    }
 
-            return data;
+    private void open_main_menu(String uuid) {
+        Intent intent = new Intent(this, MainMenu.class);
+        //intent.putExtra("LOGIN", Login.getText().toString());
+        intent.putExtra("UUID", uuid);
+        startActivity(intent);
+    }
+
+    private void open_register_menu() {
+        Intent intent = new Intent(this, Register.class);
+        startActivity(intent);
+    }
+
+
+    private boolean hasPermissions() {
+        int res = 0;
+        //string array of permissions,
+        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+
+        for (String perms : permissions) {
+            res = checkCallingOrSelfPermission(perms);
+            if (!(res == PackageManager.PERMISSION_GRANTED)) {
+                return false;
+            }
         }
+        return true;
+    }
 
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            Log.e("TAG", result);
-            //return result;
+    private void requestPerms() {
+        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(permissions, PERMISSION_REQUEST_CODE);
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        boolean allowed = true;
+
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+
+                for (int res : grantResults) {
+                    // if user granted all permissions.
+                    allowed = allowed && (res == PackageManager.PERMISSION_GRANTED);
+                }
+
+                break;
+            default:
+                // if user not granted permissions.
+                allowed = false;
+                break;
+        }
+
+        if (allowed) {
+            //user granted all permissions we can perform our task.
+            main_activity();
+        } else {
+            // we will give warning to user that they haven't granted permissions.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE) || shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    Toast.makeText(this, "Storage Permissions denied.", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    //showNoStoragePermissionSnackbar();
+                }
+            }
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            main_activity();
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }
+
+
