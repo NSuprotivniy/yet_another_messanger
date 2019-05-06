@@ -1,5 +1,6 @@
 package server;
 
+import handlers.auth.AuthHandler;
 import handlers.chat.ChatHandler;
 import handlers.user.UserHandler;
 import one.nio.http.*;
@@ -23,6 +24,13 @@ public class Server extends HttpServer {
     public Response handleUser(Request request, HttpSession session) {
         UserHandler userHandler = new UserHandler();
         Response response = userHandler.handle(request);
+        return response;
+    }
+
+    @Path("/auth")
+    public Response handleAuth(Request request, HttpSession session) {
+        AuthHandler authHandler = new AuthHandler();
+        Response response = authHandler.handle(request);
         return response;
     }
 

@@ -1,6 +1,6 @@
 package models;
 
-import wrappers.chat.ChatCreateParams;
+import wrappers.chat.ChatCreateRequest.ChatCreateParams;
 
 import java.util.List;
 
