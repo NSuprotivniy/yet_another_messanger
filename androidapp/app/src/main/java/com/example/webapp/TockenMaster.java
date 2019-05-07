@@ -16,7 +16,7 @@ import java.io.OutputStreamWriter;
 
 public class TockenMaster
 {
-    public void writeToFile(String data)
+    public void writeToFile(String uuid, String token)
     {
         boolean res;
         final File path =
@@ -46,7 +46,7 @@ public class TockenMaster
             res = file.createNewFile();
             FileOutputStream fOut = new FileOutputStream(file);
             OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
-            myOutWriter.append(data);
+            myOutWriter.append(uuid + "\n" + token);
 
             myOutWriter.close();
 
@@ -72,10 +72,11 @@ public class TockenMaster
             FileInputStream fin = new FileInputStream(file);
             BufferedReader reader = new BufferedReader(new InputStreamReader(fin));
             StringBuilder sb = new StringBuilder();
-            String line = null;
-            line = reader.readLine();
+            String uuid = null, token = null;
+            uuid = reader.readLine();
+            token = reader.readLine();
             reader.close();
-            return line;
+            return uuid + "\n" + token;
         }
         catch (FileNotFoundException e) {
             Log.e("login activity", "File not found: " + e.toString());

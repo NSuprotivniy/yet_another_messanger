@@ -4,10 +4,10 @@
     tools:showIn="menu_view">
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/new_chat"
+        <item android:id="@+id/chats_all"
             android:icon="@drawable/ic_mail"
-            android:title="New chat" />
-        <item android:id="@+id/go_to_account"
+            android:title="Chats" />
+        <item android:id="@+id/friends"
             android:icon="@drawable/ic_account"
             android:title="Friends" />
     </group>

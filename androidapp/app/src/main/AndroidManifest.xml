@@ -20,9 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ChatMenu" />
         <activity android:name=".Register" />
-        <activity android:name=".MainMenu"></activity>
+        <activity android:name=".MainMenu" />
+        <activity android:name=".Friendlist" />
+        <activity android:name=".AddFriend"
+            android:theme="@style/AppTheme.PopUpTheme"></activity>
     </application>
 
 </manifest>

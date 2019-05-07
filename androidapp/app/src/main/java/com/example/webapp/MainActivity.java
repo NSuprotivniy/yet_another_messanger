@@ -43,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
         tockenMaster.DeleteThoken();
         is_logined = tockenMaster.readFromFile();
         if (is_logined != null) {
-            open_main_menu(is_logined);
+            String [] separated = is_logined.split("\n");
+            open_main_menu(separated[0], separated[1], null);
         }
 
 
@@ -77,12 +78,15 @@ public class MainActivity extends AppCompatActivity {
                 password = Password.getText().toString();
 
                 //authorize request
-
+               // open_main_menu("123uuid123\nKaneS");
+               // finish();
                 SupaLoginer loginer = new SupaLoginer(login, password, MainActivity.this);
-                String uuid = loginer.TryToLogin();
+                String all = loginer.TryToLogin();
 
-                if (uuid != null) {
-                    open_main_menu(uuid);
+                if (all != null) {
+                    String[] separated = all.split("\n");
+                    open_main_menu(separated[0], separated[1], separated[2]);
+                    finish();
                 }
             }
         });
@@ -94,10 +98,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void open_main_menu(String uuid) {
+    private void open_main_menu(String uuid, String token, String login) {
         Intent intent = new Intent(this, MainMenu.class);
-        //intent.putExtra("LOGIN", Login.getText().toString());
+
+        //String[] separated = uuid.split("\n");
+        //TODO запрос на логин от юзера
+        intent.putExtra("LOGIN", login);
         intent.putExtra("UUID", uuid);
+        intent.putExtra("TOKEN", token);
         startActivity(intent);
     }
 

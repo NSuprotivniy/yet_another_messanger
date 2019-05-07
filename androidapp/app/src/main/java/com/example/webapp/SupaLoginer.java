@@ -37,6 +37,7 @@ public class SupaLoginer
 
     public String TryToLogin()
     {
+        String uuid = null, token = null, name = null;
         JSONObject postData = new JSONObject();
         JSONObject params = new JSONObject();
         String result = null;
@@ -54,7 +55,7 @@ public class SupaLoginer
             e.printStackTrace();
             return null;
         }
-        SendJSON sender = new SendJSON();
+        SendJSON sender = new SendJSON(10000, 10000);
         try{
             result = sender.execute("http://192.168.0.107:8080/auth", postData.toString(), "POST").get();
         }catch (InterruptedException e)
@@ -67,7 +68,7 @@ public class SupaLoginer
             e.printStackTrace();
             return null;
         }
-        String uuid = null;
+
         if (result.length() > 4)//на случай, если там код, а не тело
         {
             JSONObject recievedData, params_json;
@@ -76,6 +77,8 @@ public class SupaLoginer
                 recievedData = new JSONObject(result);
                 params_json = recievedData.getJSONObject("params");
                 uuid = params_json.getString("uuid");
+                token = params_json.getString("token");
+                name = params_json.getString("name");
 
             }catch (JSONException e)
             {
@@ -84,8 +87,8 @@ public class SupaLoginer
             }
             TockenMaster tockenMaster = new TockenMaster();
             //String prov = tockenMaster.readFromFile(Register.this);
-            tockenMaster.writeToFile(uuid);
+            tockenMaster.writeToFile(uuid, token);
         }
-        return uuid;
+        return uuid + "\n" + token + "\n" + name;
     }
 }

@@ -90,7 +90,7 @@ public class Register extends AppCompatActivity {
                         e.printStackTrace();
                         return;
                     }
-                    SendJSON sender = new SendJSON();
+                    SendJSON sender = new SendJSON(10000, 10000);
                     try{
                         result = sender.execute("http://192.168.0.107:8080/user", postData.toString(), "POST").get();
                     }catch (InterruptedException e)

@@ -24,6 +24,13 @@ import java.net.URL;
 
 public class SendJSON extends AsyncTask<String, Void, String> {
 
+    private int readTimeOut, connectTimeOut;
+    public SendJSON(int ReadTimeOut, int ConnectTimeOut)
+    {
+        this.readTimeOut = ReadTimeOut;
+        this.connectTimeOut = ConnectTimeOut;
+    }
+
     @Override
     protected String doInBackground(String... params) {
 
@@ -36,14 +43,27 @@ public class SendJSON extends AsyncTask<String, Void, String> {
 
             httpURLConnection = (HttpURLConnection) new URL(params[0]).openConnection();
             httpURLConnection.setRequestMethod(params[2]);
+            httpURLConnection.setReadTimeout(this.readTimeOut);
+            httpURLConnection.setConnectTimeout(this.connectTimeOut);
+            if(params.length > 3)
+            {
+                //
+                httpURLConnection.setRequestProperty("uuid", params[3]);
+                httpURLConnection.setRequestProperty("token", params[4]);
+            }
+            if(params[1] != null)
+            {
+                httpURLConnection.setDoOutput(true);
+                DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
+                wr.writeBytes( params[1]);
+                wr.flush();
+                wr.close();
+            }
+            else
+            {
+                httpURLConnection.setDoOutput(false);
+            }
 
-            httpURLConnection.setDoOutput(true);
-            httpURLConnection.setReadTimeout(10000);
-            httpURLConnection.setConnectTimeout(10000);
-            DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
-            wr.writeBytes( params[1]);
-            wr.flush();
-            wr.close();
             response_code = httpURLConnection.getResponseCode();
             InputStream in = httpURLConnection.getInputStream();
             InputStreamReader inputStreamReader = new InputStreamReader(in);
