@@ -6,3 +6,4 @@ config/
 *.key
 local.properties
 /androidapp/.gradle/
+/androidapp/gradle/

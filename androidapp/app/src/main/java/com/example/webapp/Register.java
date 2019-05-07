@@ -92,7 +92,7 @@ public class Register extends AppCompatActivity {
                     }
                     SendJSON sender = new SendJSON(10000, 10000);
                     try{
-                        result = sender.execute("http://192.168.0.107:8080/user", postData.toString(), "POST").get();
+                        result = sender.execute("http://192.168.43.15:8080/user", postData.toString(), "POST").get();
                     }catch (InterruptedException e)
                     {
                         e.printStackTrace();
@@ -107,11 +107,12 @@ public class Register extends AppCompatActivity {
                     if (result.length() > 4)//на случай, если там код, а не тело
                     {
                         JSONObject recievedData, params_json;
-                        String uuid;
+                        String uuid, token;
                         try {
                             recievedData = new JSONObject(result);
                             params_json = recievedData.getJSONObject("params");
                             uuid = params_json.getString("uuid");
+                            token = params_json.getString("token");
 
                         }catch (JSONException e)
                         {
@@ -119,7 +120,7 @@ public class Register extends AppCompatActivity {
                             return;
                         }
                         //String prov = tockenMaster.readFromFile(Register.this);
-                        tockenMaster.writeToFile(uuid);
+                        tockenMaster.writeToFile(uuid, token);
 
                         finish();
                     }
