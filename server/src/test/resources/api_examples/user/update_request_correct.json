@@ -3,9 +3,9 @@
   "id":1234,
   "method":"chat_get",
   "params": {
-    "uuid": "900a0d80-5b50-11e9-8be6-0a0027000001",
-    "name":"new user name",
-    "email":"new user@example.com",
-    "password": "new password"
+    "uuid": "${uuid}",
+    "name":"${name}",
+    "email":"${email}",
+    "password": "${password}"
   }
 }

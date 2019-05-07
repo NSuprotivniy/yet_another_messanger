@@ -1,6 +1,6 @@
 package models;
 
-import security.utils.PasswordHasher;
+import org.mindrot.jbcrypt.BCrypt;
 import wrappers.user.UserCreateRequest.UserCreateParams;
 
 import java.util.List;
@@ -9,14 +9,14 @@ public class User implements Model {
     private String name;
     private String email;
     private String passwordDigest;
+    private String salt;
     private List<Chat> chats;
-
-    private final PasswordHasher passwordHasher = PasswordHasher.getInstance();
 
     public User(String name, String email, String password) {
         this.name = name;
         this.email = email;
-        this.passwordDigest = passwordHasher.hash(password);
+        this.salt = BCrypt.gensalt();
+        this.passwordDigest = BCrypt.hashpw(password, this.salt);
     }
 
     public User(String name, String email) {
@@ -62,7 +62,8 @@ public class User implements Model {
 
     public User setPassword(String password) {
         if (password != null) {
-            this.passwordDigest = passwordHasher.hash(password);
+            this.salt = BCrypt.gensalt();
+            this.passwordDigest = BCrypt.hashpw(password, this.salt);
         }
         return this;
     }

@@ -3,6 +3,8 @@
   "id": 1234,
   "method": "chat_create",
   "params": {
-    "name": "new chat"
+    "name": "${name}",
+    "email": "${email}",
+    "password": "${password}"
   }
 }

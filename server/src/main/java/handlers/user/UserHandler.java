@@ -7,16 +7,16 @@ import handlers.utils.Utils;
 import models.User;
 import one.nio.http.Request;
 import one.nio.http.Response;
-import wrappers.chat.EmptyChatRequest;
+import session.Session;
+import session.SessionStorage;
 import wrappers.user.*;
+
+import java.io.IOException;
 
 public class UserHandler extends RESTHandler {
 
-    private final CassandraUser cassandraUser;
-
-    public UserHandler() {
-        this.cassandraUser = CassandraUser.getInstance();
-    }
+    private final CassandraUser cassandraUser = CassandraUser.getInstance();
+    private final SessionStorage sessionStorage = SessionStorage.getInstance();
 
     @Override
     protected Response get(Request request) {
@@ -54,7 +54,13 @@ public class UserHandler extends RESTHandler {
         if (uuid == null) {
             return new Response(Response.INTERNAL_ERROR, gson.toJson(UserErrorResponse.unknown()).getBytes());
         }
-        UserCreateResponseSuccess userCreateResponseSuccess = new UserCreateResponseSuccess(uuid);
+        Session session = new Session(uuid);
+        try {
+            sessionStorage.set(session);
+        } catch (IOException e) {
+            return new Response(Response.INTERNAL_ERROR, gson.toJson(UserErrorResponse.unknown()).getBytes());
+        }
+        UserCreateResponseSuccess userCreateResponseSuccess = new UserCreateResponseSuccess(uuid, session.getToken());
         return Response.ok(gson.toJson(userCreateResponseSuccess));
     }
 

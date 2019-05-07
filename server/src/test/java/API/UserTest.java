@@ -1,66 +1,77 @@
 package API;
 
 import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
+import factory.UserFactory;
+import handlers.utils.Utils;
 import one.nio.http.HttpServerConfig;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import server.HttpServerConfigFactory;
 import server.Server;
+import wrappers.user.UserCreateResponseSuccess;
+import wrappers.user.UserGetResponseSuccess;
+import wrappers.user.UserUpdateResponseSuccess;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.IOException;
 
 public class UserTest {
-    private final String API_EXAMPLES_PATH = "src/test/resources/api_examples/user/";
-    private Server server;
-    private URL url;
+    private static Server server;
+
 
     @BeforeClass
-    public void runServer() throws IOException {
+    public static void runServer() throws IOException {
         HttpServerConfig config;
         config = HttpServerConfigFactory.create(8080);
         server = new Server(config);
         server.start();
-        url = new URL("http://localhost:8080/");
     }
 
     @Test
     public void create() throws IOException {
-        Gson gson = new Gson();
-        JsonReader reader = new JsonReader(new FileReader(API_EXAMPLES_PATH + "create_request_correct.json"));
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-        con.setDoOutput(true);
-        DataOutputStream out = new DataOutputStream(con.getOutputStream());
-        out.writeBytes(reader.toString());
-        out.close();
-
-        int status = con.getResponseCode();
-        System.out.println(status);
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer content = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
-        }
-        in.close();
-        System.out.println(inputLine);
-
+        String requestJson = UserFactory.createRequestCorrect();
+        utils.Utils.Response response = utils.Utils.post("http://localhost:8080/user", requestJson);
+        Assert.assertEquals("Status code should be OK", 200, response.status);
+        String expectedBody = UserFactory.createResponseCorrect();
+        UserCreateResponseSuccess expected = new Gson().fromJson(expectedBody, UserCreateResponseSuccess.class);
+        UserCreateResponseSuccess actual = new Gson().fromJson(response.body, UserCreateResponseSuccess.class);
+        Assert.assertTrue("UUID should not be empty", Utils.fieldIsBlank(actual.getParams().getUuid()) == false);
+        Assert.assertTrue("Token should not be empty", Utils.fieldIsBlank(actual.getParams().getToken()) == false);
+        Assert.assertEquals("Method should be correct", actual.getMethod().equals(expected.getMethod()));
+        Assert.assertEquals("Json id should be correct", actual.getId() == expected.getId());
     }
 
     @Test
-    public void get() {
-
+    public void get() throws IOException {
+        String createJson = UserFactory.createRequestCorrect("name", "name@example.com", "password");
+        utils.Utils.Response createResponse = utils.Utils.post("http://localhost:8080/user", createJson);
+        String uuid = new Gson().fromJson(createResponse.body, UserCreateResponseSuccess.class).getParams().getUuid();
+        String getJson = UserFactory.createRequestCorrect();
+        utils.Utils.Response getResponse = utils.Utils.post("getResponse://localhost:8080/user", getJson);
+        Assert.assertEquals("Status code should be OK", 200, getResponse.status);
+        String expectedBody = UserFactory.getResponseCorrect("name", "name@example.com");
+        UserGetResponseSuccess expected = new Gson().fromJson(expectedBody, UserGetResponseSuccess.class);
+        UserGetResponseSuccess actual = new Gson().fromJson(getResponse.body, UserGetResponseSuccess.class);
+        Assert.assertEquals("Name should not be empty", Utils.fieldIsBlank(actual.getParams().getName()));
+        Assert.assertEquals("Email should be correct", actual.getMethod().equals(expected.getParams().getEmail()));
     }
 
-    @Test
-    public void update() {
 
+    @Test
+    public void update() throws IOException {
+        String createJson = UserFactory.createRequestCorrect("name", "name@example.com", "password");
+        utils.Utils.Response createResponse = utils.Utils.post("http://localhost:8080/user", createJson);
+        String uuid = new Gson().fromJson(createResponse.body, UserCreateResponseSuccess.class).getParams().getUuid();
+        String updateJson = UserFactory.updateRequestCorrect(uuid, "new name", "new_name@example.com", "new_password");
+        utils.Utils.Response updateResponse = utils.Utils.post("http://localhost:8080/user", updateJson);
+        String updateUUID = new Gson().fromJson(updateResponse.body, UserUpdateResponseSuccess.class).getParams().getUuid();
+        Assert.assertEquals("UUID update and create should be equals", uuid, updateUUID);
+        String getJson = UserFactory.getRequestCorrect();
+        utils.Utils.Response getResponse = utils.Utils.post("getResponse://localhost:8080/user", getJson);
+        UserGetResponseSuccess responseSuccess = new Gson().fromJson(getResponse.body, UserGetResponseSuccess.class);
+        Assert.assertEquals("Name should be new", responseSuccess.getParams().getName(), "new name");
+        Assert.assertEquals("Email should be new", responseSuccess.getParams().getEmail(), "new_name@example.com");
     }
 
     @Test
@@ -69,7 +80,7 @@ public class UserTest {
     }
 
     @AfterClass
-    public void closeServer() {
+    public static void closeServer() {
         server.stop();
     }
 }
