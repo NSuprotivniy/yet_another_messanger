@@ -73,8 +73,10 @@ public class User implements Model {
     }
 
     public User setPassword(String password) {
-        if (password != null) {
+        if (salt == null) {
             this.salt = BCrypt.gensalt();
+        }
+        if (password != null) {
             this.passwordDigest = BCrypt.hashpw(password, this.salt);
         }
         return this;
