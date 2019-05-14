@@ -60,8 +60,11 @@ public class UserHandler extends RESTHandler {
         } catch (IOException e) {
             return new Response(Response.INTERNAL_ERROR, gson.toJson(UserErrorResponse.unknown()).getBytes());
         }
-        UserCreateResponseSuccess userCreateResponseSuccess = new UserCreateResponseSuccess(user.getUuid(), session.getToken());
-        return Response.ok(gson.toJson(userCreateResponseSuccess));
+        UserCreateResponseSuccess userCreateResponseSuccess = new UserCreateResponseSuccess(user.getUuid());
+        Response response = Response.ok(gson.toJson(userCreateResponseSuccess));
+        response.addHeader("token: " + session.getToken());
+        return response;
+
     }
 
     @Override
