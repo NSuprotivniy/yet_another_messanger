@@ -12,7 +12,7 @@ import android.widget.EditText;
 
 public class AddFriend extends Activity {
 
-    private String uuid = null;
+    private String uuid = null, token;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,9 +22,10 @@ public class AddFriend extends Activity {
 
         Bundle b = getIntent().getExtras();
         String value = null;
-        if(b != null)
+        if(b != null) {
             uuid = b.getString("UUID");
-
+            token = b.getString("TOKEN");
+        }
         int width, heigth;
         width = dm.widthPixels;
         heigth = dm.heightPixels;

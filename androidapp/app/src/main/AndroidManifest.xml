@@ -23,8 +23,12 @@
         <activity android:name=".Register" />
         <activity android:name=".MainMenu" />
         <activity android:name=".Friendlist" />
-        <activity android:name=".AddFriend"
-            android:theme="@style/AppTheme.PopUpTheme"></activity>
+        <activity
+            android:name=".AddFriend"
+            android:theme="@style/AppTheme.PopUpTheme" />
+        <activity
+            android:name=".AddChat"
+            android:theme="@style/AppTheme.PopUpTheme" />
     </application>
 
 </manifest>

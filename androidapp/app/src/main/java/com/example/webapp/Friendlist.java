@@ -3,6 +3,7 @@ package com.example.webapp;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -32,7 +33,7 @@ import java.util.concurrent.ExecutionException;
 
 public class Friendlist extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     private DrawerLayout drawLayout;
-    private String nickname, uuid;
+    private String nickname, uuid, tocken;
     private String[] all_friends;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +45,11 @@ public class Friendlist extends AppCompatActivity implements NavigationView.OnNa
         drawLayout = findViewById(R.id.draw_layout);
         nickname = extras.getString("LOGIN");
         uuid = extras.getString("UUID");
-
+        tocken = extras.getString("TOKEN");
         ListView friend_list = findViewById(R.id.Chats);
-        int screenHeight = ((WindowManager)this.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getHeight();
-        LinearLayout.LayoutParams vi_params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, (int)(screenHeight*0.70));
+        Point size = new Point();
+        ((WindowManager)this.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(size);
+        LinearLayout.LayoutParams vi_params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int)(size.y*0.70));
         friend_list.setLayoutParams(vi_params);
 
         setSupportActionBar(toolbar);
@@ -60,6 +62,7 @@ public class Friendlist extends AppCompatActivity implements NavigationView.OnNa
                 Intent intent = new Intent(Friendlist.this, AddFriend.class);
                 Bundle b = new Bundle();
                 b.putString("UUID", uuid);
+                b.putString("TOKEN", tocken);
                 startActivity(intent);
             }
         });
@@ -74,7 +77,7 @@ public class Friendlist extends AppCompatActivity implements NavigationView.OnNa
         drawLayout.addDrawerListener(toggle);
         toggle.syncState();
         String [] all_chats2 = {"Vasya\nuuid1", "Petya\nuuid2"};
-        SendJSON sender = new SendJSON(10000, 10000);
+        SendJSON sender = new SendJSON(1000000, 100000);
         //TODO remove this plug
         //Request /chats params:{name: "", uuid: ""}
         //  String [] friend = geChats();
@@ -103,7 +106,7 @@ public class Friendlist extends AppCompatActivity implements NavigationView.OnNa
             public void onItemClick(AdapterView<?> adapterView, View view, int index, long l) {
                 //Object clickItemObj = adapterView.getAdapter().getItem(index);
                 String[] chosen = all_friends[index].split("\n");
-                //TODO get friend with uuid, but i get
+                //TODO get friend with uuid, that i get
 
             }
         });
