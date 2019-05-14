@@ -10,73 +10,71 @@ import com.datastax.oss.driver.api.querybuilder.insert.Insert;
 import com.datastax.oss.driver.api.querybuilder.select.Select;
 import com.datastax.oss.driver.api.querybuilder.update.Assignment;
 import com.datastax.oss.driver.api.querybuilder.update.Update;
-import models.Chat;
+import models.Message;
 
 import java.util.List;
 import java.util.UUID;
 
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.*;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.literal;
-import static java.util.Arrays.asList;
 
-public class CassandraChat {
-    private static final CassandraChat INSTANCE = new CassandraChat();
-    public static CassandraChat getInstance() {
+public class CassandraMessage {
+    private static final CassandraMessage INSTANCE = new CassandraMessage();
+    public static CassandraMessage getInstance() {
         return INSTANCE;
     }
 
     private CqlSession session;
 
-    private CassandraChat()  {
+    private CassandraMessage()  {
         this.session = Cassandra.getSession();
     }
 
-    public String save(Chat chat) {
+    public String save(Message message) {
         UUID uuid = Uuids.timeBased();
-        Insert insert = insertInto( "chats")
+        Insert insert = insertInto( "messages")
                 .value("uuid", literal(uuid))
-                .value("name", literal(chat.getName()))
-                .value("participants_uuids", literal(chat.getName()))
-                .value("creator", literal(chat.getName()));
+                .value("text", literal(message.getText()))
+                .value("creator_uuid", literal(message.getCreatorUUID()))
+                .value("chat_uuid", literal(message.getChatUUID()));
         session.execute(insert.build());
         return uuid.toString();
     }
 
-    public void update(Chat chat, List<String> fields) {
+    public void update(Message message, List<String> fields) {
         Assignment[] assignments = (Assignment[])fields.stream().map(field -> {
             switch (field) {
-                case "name": return Assignment.setColumn("name", literal(chat.getName()));
-                case "participants_uuids": return Assignment.setColumn("participants_uuids", literal(chat.getParticipantsUUIDs()));
+                case "text": return Assignment.setColumn("text", literal(message.getText()));
                 default: return null;
             }
         }).toArray();
         Update updateUsers = QueryBuilder
-                .update("chats")
+                .update("messages")
                 .set(assignments)
-                .whereColumn("uuid").isEqualTo(literal(UUID.fromString(chat.getUuid())));
+                .whereColumn("uuid").isEqualTo(literal(UUID.fromString(message.getUuid())));
         session.execute(updateUsers.build());
     }
 
-    public Chat get(String uuid, List<String> fields) {
-        Select select = selectFrom("chats")
+    public Message get(String uuid, List<String> fields) {
+        Select select = selectFrom("messages")
                 .columns(fields)
                 .whereColumn("uuid").isEqualTo(literal(UUID.fromString(uuid)))
                 .allowFiltering();
         ResultSet result = session.execute(select.build());
         Row row = result.all().get(0);
-        Chat chat = new Chat().setUuid(uuid);
+        Message message = new Message().setUuid(uuid);
         for (String field : fields) {
             switch (field) {
-                case "name": chat.setName(row.getString("name"));
-                case "participants_uuids": chat.setName(row.getString("participants_uuids"));
-                case "creator": chat.setName(row.getString("creator"));
+                case "text": message.setText(row.getString("text"));
+                case "creator_uuid": message.setText(row.getString("creator_uuid"));
+                case "chat_uuid": message.setText(row.getString("chat_uuid"));
             }
         }
-        return chat;
+        return message;
     }
 
     public void delete(String uuid) {
-        Delete deleteChat = deleteFrom("chats").whereColumn("uuid").isEqualTo(literal(UUID.fromString(uuid)));
+        Delete deleteChat = deleteFrom("messages").whereColumn("uuid").isEqualTo(literal(UUID.fromString(uuid)));
         session.execute(deleteChat.build());
     }
 }

@@ -11,14 +11,14 @@ public class ChatCreateRequest extends JsonRPCRequestWrapper {
 
     public class ChatCreateParams {
         private String name;
-        private String[] usersUUIDs;
+        private String[] participantsUUIDs;
 
         public String getName() {
             return name;
         }
 
-        public String[] getUsersUUIDs() {
-            return usersUUIDs;
+        public String[] getParticipantsUUIDs() {
+            return participantsUUIDs;
         }
     }
 }

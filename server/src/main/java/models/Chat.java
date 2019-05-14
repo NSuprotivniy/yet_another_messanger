@@ -2,25 +2,29 @@ package models;
 
 import wrappers.chat.ChatCreateRequest.ChatCreateParams;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Chat implements Model {
+    private String uuid;
     private String name;
-    private List<User> users;
-    private String[] usersUUIDS;
+    private List<String> participantsUUIDs;
+    private String creatorUUID;
 
-    public Chat(String name, List<User> users) {
+    public Chat() {}
+
+    public Chat(String name, String[] participantsUUIDS, String creatorUUID) {
         this.name = name;
-        this.users = users;
+        this.participantsUUIDs = Arrays.asList(participantsUUIDS);
+        this.creatorUUID = creatorUUID;
     }
 
-    public Chat(String name, String[] usersUUIDS) {
+    public void setName(String name) {
         this.name = name;
-        this.usersUUIDS = usersUUIDS;
     }
 
-    public Chat(ChatCreateParams params) {
-        this(params.getName());
+    public Chat(ChatCreateParams params, String creatorUUID) {
+        this(params.getName(), params.getParticipantsUUIDs(),creatorUUID);
     }
 
     public Chat(String name) {
@@ -31,7 +35,30 @@ public class Chat implements Model {
         return name;
     }
 
-    public List<User> getUsers() {
-        return users;
+    public String getUuid() {
+        return uuid;
+    }
+
+    public Chat setUuid(String uuid) {
+        this.uuid = uuid;
+        return this;
+    }
+
+    public List<String> getParticipantsUUIDs() {
+        return participantsUUIDs;
+    }
+
+    public Chat setParticipantsUUIDs(List<String> participantsUUIDs) {
+        this.participantsUUIDs = participantsUUIDs;
+        return this;
+    }
+
+    public String getCreatorUUID() {
+        return creatorUUID;
+    }
+
+    public Chat setCreatorUUID(String creatorUUID) {
+        this.creatorUUID = creatorUUID;
+        return this;
     }
 }

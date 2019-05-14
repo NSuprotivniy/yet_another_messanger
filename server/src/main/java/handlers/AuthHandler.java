@@ -1,4 +1,4 @@
-package handlers.auth;
+package handlers;
 
 import handlers.RESTHandler;
 import one.nio.http.Request;

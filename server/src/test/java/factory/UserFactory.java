@@ -1,7 +1,7 @@
 package factory;
 
-import me.prettyprint.cassandra.utils.TimeUUIDUtils;
-import org.apache.commons.lang.RandomStringUtils;
+import com.datastax.oss.driver.api.core.uuid.Uuids;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,7 +31,7 @@ public class UserFactory {
     }
 
     public static String createResponseCorrect() throws IOException {
-        String uuid = TimeUUIDUtils.getUniqueTimeUUIDinMillis().toString();
+        String uuid = Uuids.timeBased().toString();
         return createResponseCorrect(uuid);
     }
 
@@ -45,7 +45,7 @@ public class UserFactory {
     }
 
     public static String updateRequestCorrect() throws IOException {
-        String uuid = TimeUUIDUtils.getUniqueTimeUUIDinMillis().toString();
+        String uuid = Uuids.timeBased().toString();
         String name = RandomStringUtils.randomAlphanumeric(10);
         String email = name + "@example.com";
         String password = RandomStringUtils.randomAlphanumeric(10);
@@ -58,7 +58,7 @@ public class UserFactory {
     }
 
     public static String updateResponseCorrect() throws IOException {
-        String uuid = TimeUUIDUtils.getUniqueTimeUUIDinMillis().toString();
+        String uuid = Uuids.timeBased().toString();
         return updateResponseCorrect(uuid);
     }
 
@@ -68,7 +68,7 @@ public class UserFactory {
     }
 
     public static String deletRequestCorrect() throws IOException {
-        String uuid = TimeUUIDUtils.getUniqueTimeUUIDinMillis().toString();
+        String uuid = Uuids.timeBased().toString();
         return deleteRequestCorrect(uuid);
     }
 
@@ -78,7 +78,7 @@ public class UserFactory {
     }
 
     public static String deleteResponseCorrect() throws IOException {
-        String uuid = TimeUUIDUtils.getUniqueTimeUUIDinMillis().toString();
+        String uuid = Uuids.timeBased().toString();
         return deleteResponseCorrect(uuid);
     }
 
@@ -88,7 +88,7 @@ public class UserFactory {
     }
 
     public static String getRequestCorrect() throws IOException {
-        String uuid = TimeUUIDUtils.getUniqueTimeUUIDinMillis().toString();
+        String uuid = Uuids.timeBased().toString();
         return getRequestCorrect(uuid);
     }
 

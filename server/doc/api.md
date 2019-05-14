@@ -5,7 +5,7 @@
         "version": "2.0",
         "method": "chat_create",
         "params": {
-                "name": "new chat"
+                "text": "new chatUUID"
         },
         "id": 1234
 }
@@ -30,7 +30,7 @@
         "version": "2.0",
         "method": "creat_user",
         "params": {
-                "name": "new user",
+                "text": "new user",
                 "email": "new_user@email.com",
                 "password": "password"
         },

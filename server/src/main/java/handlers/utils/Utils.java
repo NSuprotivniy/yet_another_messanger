@@ -1,20 +1,42 @@
 package handlers.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Utils {
     public static boolean fieldIsBlank(String field) {
         return (field == null || field.isEmpty());
     }
 
-    public static String blankFieldToString(String[] fields, boolean[] isBlank) {
-        List<String> blankFields = new ArrayList<>(fields.length);
-        for (int i = 0; i < isBlank.length; i++) {
-            if (isBlank[i]) {
-                blankFields.add(fields[i]);
+    public static boolean fieldIsBlank(String[] field) {
+        if (field == null || field.length == 0) return false;
+        for (String s : field) {
+            if (s == null || s.isEmpty()) return false;
+        }
+        return true;
+    }
+
+    public static boolean fieldIsBlank(Object field) {
+        if (field instanceof String) { return fieldIsBlank(((String) field)); }
+        if (field instanceof String[]) { return fieldIsBlank(((String[]) field)); }
+        return false;
+    }
+
+    public static String blankFieldToString(List<String> fieldsNames,  List<Object> fields) {
+        List<String> blankFields = new ArrayList<>(fields.size());
+        for (int i = 0; i < fieldsNames.size(); i++) {
+            if (fieldIsBlank(fields.get(i))) {
+                blankFields.add(fieldsNames.get(i));
             }
         }
         return String.join(", ", blankFields);
+    }
+
+    public static String blankFieldToString(Map<String, Object> fields) {
+        List<String> blankFields = fields.entrySet().stream().filter(e -> fieldIsBlank(e.getValue())).map(e -> e.getKey()).collect(Collectors.toList());
+        return blankFields.isEmpty() ? null : String.join(", ", blankFields);
     }
 }
