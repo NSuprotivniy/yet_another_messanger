@@ -49,6 +49,7 @@ public class AddFriend extends Activity {
             public void onClick(View v) {
                 //TODO Send GET request with my uuid and email
 
+
             }
         });
 

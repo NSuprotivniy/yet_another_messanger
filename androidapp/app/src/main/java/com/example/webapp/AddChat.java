@@ -27,11 +27,12 @@ import java.util.concurrent.ExecutionException;
 
 public class AddChat extends Activity {
 
-    String tocken, uuid;
+    String tocken, uuid, chat_name;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_chat);
+        //String chat_name = "";
         ListView friend_list = findViewById(R.id.Chats);
         Point size = new Point();
         ((WindowManager)this.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(size);
@@ -75,14 +76,14 @@ public class AddChat extends Activity {
             public void onClick(View v) {
                 String result = "";
                 try{
-                    SendJSON sender = new SendJSON(100, 100);
+                    SendJSON sender = new SendJSON(100000, 100000);
                     //result = sender.execute("http://192.168.43.15:9090/chats", null, "GET", uuid, token).get();
                     // test
                     JSONObject postData = new JSONObject();
                     JSONObject params = new JSONObject();
                     JSONArray array = new JSONArray();
                     EditText name = findViewById(R.id.chat_name);
-                    String chat_name = name.getText().toString();
+                    chat_name = name.getText().toString();
                     if (chat_name.equals(""))
                     {
                         Intent intent = new Intent();
@@ -100,7 +101,7 @@ public class AddChat extends Activity {
                         array.put(uuid);
 
                         params.put("participantsUUIDs",array);
-                        params.put("name","chat_1");
+                        params.put("name",chat_name);
 
                         postData.put("params", params);
 
@@ -108,7 +109,8 @@ public class AddChat extends Activity {
                         e.printStackTrace();
                     }
                     //
-                    result = sender.execute("http://192.168.43.15:9090/chat", postData.toString(), "POST", null, tocken).get();
+                    String IP = new Kostyl().IP + "/chat";
+                    result = sender.execute(IP, postData.toString(), "POST", null, tocken).get();
                 }catch (InterruptedException e)
                 {
                     e.printStackTrace();
@@ -120,7 +122,13 @@ public class AddChat extends Activity {
                 Intent intent = new Intent();
                 //intent.putExtra("name", result);
                 //TODO remove plug, parse answer
-                intent.putExtra("name", "Kirill\nuuid234");
+                if (result.length() < 4)
+                {
+                    intent.putExtra("name", "");
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
+                intent.putExtra("name", chat_name + "\n" + result);
                 setResult(RESULT_OK, intent);
                 finish();
             }

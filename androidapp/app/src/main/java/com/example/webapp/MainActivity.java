@@ -37,10 +37,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button LoginButton, RegisterButton;
         CheckBox VisiblePassword;
-        open_main_menu(null,null,null);
         String is_logined = null;
         TockenMaster tockenMaster = new TockenMaster();
-        // tockenMaster.DeleteThoken();
+         tockenMaster.DeleteThoken();
         is_logined = tockenMaster.readFromFile();
         if (is_logined != null) {
             String [] separated = is_logined.split("\n");
