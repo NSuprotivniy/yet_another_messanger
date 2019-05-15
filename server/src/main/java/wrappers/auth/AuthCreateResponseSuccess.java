@@ -2,18 +2,16 @@ package wrappers.auth;
 
 public class AuthCreateResponseSuccess {
     private AuthCreateResponseSuccessParams params;
-    public AuthCreateResponseSuccess(String uuid, String name, String email) {
-        this.params = new AuthCreateResponseSuccessParams(uuid, name, email);
+    public AuthCreateResponseSuccess(String uuid, String name) {
+        this.params = new AuthCreateResponseSuccessParams(uuid, name);
     }
     public class AuthCreateResponseSuccessParams {
         private String uuid;
         private String name;
-        private String email;
 
-        public AuthCreateResponseSuccessParams(String uuid, String name, String email) {
+        public AuthCreateResponseSuccessParams(String uuid, String name) {
             this.uuid = uuid;
             this.name = name;
-            this.email = email;
         }
 
         public void setUuid(String uuid) {
@@ -22,10 +20,6 @@ public class AuthCreateResponseSuccess {
 
         public void setName(String name) {
             this.name = name;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
         }
     }
 }

@@ -7,3 +7,4 @@ config/
 local.properties
 /androidapp/.gradle/
 /androidapp/gradle/
+/server/security/

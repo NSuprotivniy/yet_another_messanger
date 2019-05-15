@@ -51,7 +51,7 @@ public class CassandraMessage {
         Update updateUsers = QueryBuilder
                 .update("messages")
                 .set(assignments)
-                .whereColumn("uuid").isEqualTo(literal(UUID.fromString(message.getUuid())));
+                .whereColumn("uuid").isEqualTo(literal(message.getUuid()));
         session.execute(updateUsers.build());
     }
 
@@ -65,9 +65,9 @@ public class CassandraMessage {
         Message message = new Message().setUuid(uuid);
         for (String field : fields) {
             switch (field) {
-                case "text": message.setText(row.getString("text"));
-                case "creator_uuid": message.setText(row.getString("creator_uuid"));
-                case "chat_uuid": message.setText(row.getString("chat_uuid"));
+                case "text": message.setText(row.getString("text")); break;
+                case "creator_uuid": message.setText(row.getString("creator_uuid")); break;
+                case "chat_uuid": message.setText(row.getString("chat_uuid")); break;
             }
         }
         return message;

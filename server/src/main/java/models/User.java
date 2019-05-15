@@ -3,15 +3,14 @@ package models;
 import org.mindrot.jbcrypt.BCrypt;
 import wrappers.user.UserCreateRequest.UserCreateParams;
 
-import java.util.List;
+import java.util.UUID;
 
 public class User implements Model {
-    private String uuid;
+    private UUID uuid;
     private String name;
     private String email;
     private String passwordDigest;
     private String salt;
-    private List<Chat> chats;
 
     public User() {}
 
@@ -31,12 +30,6 @@ public class User implements Model {
         this(params.getName(), params.getEmail(), params.getPassword());
     }
 
-    public User(String name, String email, List<Chat> chats) {
-        this.name = name;
-        this.email = email;
-        this.chats = chats;
-    }
-
     public String getName() {
         return name;
     }
@@ -54,7 +47,7 @@ public class User implements Model {
     }
 
 
-    public String getUuid() {
+    public UUID getUuid() {
         return uuid;
     }
 
@@ -82,11 +75,6 @@ public class User implements Model {
         return this;
     }
 
-    public User setChats(List<Chat> chats) {
-        this.chats = chats;
-        return this;
-    }
-
     public User setPasswordDigest(String passwordDigest) {
         this.passwordDigest = passwordDigest;
         return this;
@@ -98,7 +86,7 @@ public class User implements Model {
     }
 
     public User setUuid(String uuid) {
-        this.uuid = uuid;
+        this.uuid = UUID.fromString(uuid);
         return this;
     }
 }

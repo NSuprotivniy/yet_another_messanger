@@ -51,10 +51,10 @@ public class ChatHandler extends RESTHandler {
         if (emptyFields != null) {
             return new Response(Response.BAD_REQUEST, gson.toJson(MessageErrorResponse.invalidFieldFormat(emptyFields)).getBytes());
         }
-        String creatorUUID = sessionStorage.get(request.getHeader("token")).getUuid();
-        Chat user = new Chat(params, creatorUUID);
-        cassandraChat.save(user);
-        ChatCreateResponseSuccess userCreateResponseSuccess = new ChatCreateResponseSuccess(user.getUuid());
+        String creatorUUID = sessionStorage.get(request.getHeader("token: ")).getUuid();
+        Chat chat = new Chat(params, creatorUUID);
+        String uuid = cassandraChat.save(chat);
+        ChatCreateResponseSuccess userCreateResponseSuccess = new ChatCreateResponseSuccess(uuid);
         return Response.ok(gson.toJson(userCreateResponseSuccess));
     }
 

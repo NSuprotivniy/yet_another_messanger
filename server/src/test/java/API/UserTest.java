@@ -37,7 +37,6 @@ public class UserTest {
         UserCreateResponseSuccess expected = new Gson().fromJson(expectedBody, UserCreateResponseSuccess.class);
         UserCreateResponseSuccess actual = new Gson().fromJson(response.body, UserCreateResponseSuccess.class);
         Assert.assertTrue("UUID should not be empty", Utils.fieldIsBlank(actual.getParams().getUuid()) == false);
-        Assert.assertTrue("Token should not be empty", Utils.fieldIsBlank(actual.getParams().getToken()) == false);
         Assert.assertEquals("Method should be correct", actual.getMethod().equals(expected.getMethod()));
         Assert.assertEquals("Json id should be correct", actual.getId() == expected.getId());
     }

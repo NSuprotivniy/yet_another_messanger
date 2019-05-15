@@ -41,21 +41,22 @@ public class AuthHandler extends RESTHandler {
             return new Response(Response.BAD_REQUEST, gson.toJson(AuthErrorResponse.invalidFieldFormat(emptyFields)).getBytes());
         }
         User user = new User().setEmail(params.getEmail());
-        user = cassandraUser.search(user, asList("email"), asList("uuid", "email", "password_digest", "salt"));
-        if (user.getPasswordDigest().equals(BCrypt.hashpw(params.getPassword(), user.getSalt()))) {
-            Session session = new Session(user.getUuid());
+        user = cassandraUser.search(user, asList("email"), asList("uuid", "name", "password_digest", "salt"));
+        if (user != null && user.getPasswordDigest().equals(BCrypt.hashpw(params.getPassword(), user.getSalt()))) {
+            Session session = new Session(user.getUuid().toString());
             try {
                 sessionStorage.set(session);
             } catch (IOException e) {
                 return new Response(Response.INTERNAL_ERROR, gson.toJson(UserErrorResponse.unknown()).getBytes());
             }
             AuthCreateResponseSuccess userCreateResponseSuccess = new AuthCreateResponseSuccess(
-                    user.getUuid(), user.getName(), user.getEmail());
+                    user.getUuid().toString(), user.getName());
             Response response = Response.ok(gson.toJson(userCreateResponseSuccess));
-            response.addHeader("token: " + session.getToken());
+            response.addHeader("token:" + session.getToken());
             return response;
-        };
-        return new Response(Response.NOT_FOUND, gson.toJson(UserErrorResponse.notFound("user")).getBytes());
+        } else {
+            return new Response(Response.NOT_FOUND, gson.toJson(UserErrorResponse.notFound("user")).getBytes());
+        }
     }
 
     @Override

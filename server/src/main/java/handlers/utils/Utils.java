@@ -12,11 +12,11 @@ public class Utils {
     }
 
     public static boolean fieldIsBlank(String[] field) {
-        if (field == null || field.length == 0) return false;
+        if (field == null || field.length == 0) return true;
         for (String s : field) {
-            if (s == null || s.isEmpty()) return false;
+            if (s == null || s.isEmpty()) return true;
         }
-        return true;
+        return false;
     }
 
     public static boolean fieldIsBlank(Object field) {

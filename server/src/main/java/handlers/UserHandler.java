@@ -13,6 +13,7 @@ import wrappers.user.*;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.UUID;
 
 import static java.util.Arrays.asList;
 
@@ -53,16 +54,16 @@ public class UserHandler extends RESTHandler {
             return new Response(Response.BAD_REQUEST, gson.toJson(MessageErrorResponse.invalidFieldFormat(emptyFields)).getBytes());
         }
         User user = new User(params);
-        cassandraUser.save(user);
-        Session session = new Session(user.getUuid());
+        String uuid = cassandraUser.save(user);
+        Session session = new Session(uuid);
         try {
             sessionStorage.set(session);
         } catch (IOException e) {
             return new Response(Response.INTERNAL_ERROR, gson.toJson(UserErrorResponse.unknown()).getBytes());
         }
-        UserCreateResponseSuccess userCreateResponseSuccess = new UserCreateResponseSuccess(user.getUuid());
+        UserCreateResponseSuccess userCreateResponseSuccess = new UserCreateResponseSuccess(uuid);
         Response response = Response.ok(gson.toJson(userCreateResponseSuccess));
-        response.addHeader("token: " + session.getToken());
+        response.addHeader("token:" + session.getToken());
         return response;
 
     }

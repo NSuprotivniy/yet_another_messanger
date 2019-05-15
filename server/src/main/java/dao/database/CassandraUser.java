@@ -56,7 +56,7 @@ public class CassandraUser {
         Update updateUsers = QueryBuilder
                 .update("users")
                 .set(assignments)
-                .whereColumn("uuid").isEqualTo(literal(UUID.fromString(user.getUuid())));
+                .whereColumn("uuid").isEqualTo(literal(user.getUuid()));
         session.execute(updateUsers.build());
     }
 
@@ -73,10 +73,10 @@ public class CassandraUser {
         User user = new User().setUuid(uuid);
         for (String field : fields) {
             switch (field) {
-                case "name": user.setName(row.getString("name"));
-                case "email": user.setEmail(row.getString("email"));
-                case "password_digest": user.setPasswordDigest(row.getString("password_digest"));
-                case "salt": user.setSalt(row.getString("salt"));
+                case "name": user.setName(row.getString("name")); break;
+                case "email": user.setEmail(row.getString("email")); break;
+                case "password_digest": user.setPasswordDigest(row.getString("password_digest")); break;
+                case "salt": user.setSalt(row.getString("salt")); break;
             }
         }
         return user;
@@ -86,10 +86,10 @@ public class CassandraUser {
         List<Relation> relations = searchFields.stream().map(field -> {
             Object value = null;
             switch (field) {
-                case "name": value = user.getName();
-                case "email": value = user.getEmail();
-                case "password_digest": value = user.getPasswordDigest();
-                case "salt": value = user.getSalt();
+                case "name": value = user.getName(); break;
+                case "email": value = user.getEmail(); break;
+                case "password_digest": value = user.getPasswordDigest(); break;
+                case "salt": value = user.getSalt(); break;
             }
             return Relation.column(field).isEqualTo(literal(value));
         }).collect(Collectors.toList());
@@ -98,16 +98,17 @@ public class CassandraUser {
                 .where(relations)
                 .allowFiltering();
         ResultSet result = session.execute(select.build());
-        if (result.all().size() == 0) {
+        Row row = result.one();
+        if (row == null) {
             return null;
         }
-        Row row = result.all().get(0);
         for (String field : fields) {
             switch (field) {
-                case "name": user.setName(row.getString("name"));
-                case "email": user.setEmail(row.getString("email"));
-                case "password_digest": user.setPasswordDigest(row.getString("password_digest"));
-                case "salt": user.setSalt(row.getString("salt"));
+                case "uuid": user.setUuid(row.getUuid("uuid").toString()); break;
+                case "name": user.setName(row.getString("name")); break;
+                case "email": user.setEmail(row.getString("email")); break;
+                case "password_digest": user.setPasswordDigest(row.getString("password_digest")); break;
+                case "salt": user.setSalt(row.getString("salt")); break;
             }
         }
         return user;

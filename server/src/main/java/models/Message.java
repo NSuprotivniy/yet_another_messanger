@@ -2,17 +2,19 @@ package models;
 
 import wrappers.message.MessageCreateRequest;
 
+import java.util.UUID;
+
 public class Message {
-    private String uuid;
+    private UUID uuid;
     private String text;
-    private String chatUUID;
-    private String creatorUUID;
+    private UUID chatUUID;
+    private UUID creatorUUID;
 
     public Message() {}
     public Message(String text, String chatUUID, String creatorUUID) {
         this.text = text;
-        this.chatUUID = chatUUID;
-        this.creatorUUID = creatorUUID;
+        this.chatUUID = UUID.fromString(chatUUID);
+        this.creatorUUID = UUID.fromString(creatorUUID);
     }
     public Message(MessageCreateRequest.MessageCreateParams params) {
         this(params.getText(), params.getChatUUID(), params.getCreatorUUID());
@@ -27,31 +29,31 @@ public class Message {
         return this;
     }
 
-    public String getChatUUID() {
+    public UUID getChatUUID() {
         return chatUUID;
     }
 
     public Message setChatUUID(String chatUUID) {
-        this.chatUUID = chatUUID;
+        this.chatUUID = UUID.fromString(chatUUID);
         return this;
     }
 
-    public String getCreatorUUID() {
+    public UUID getCreatorUUID() {
         return creatorUUID;
     }
 
     public Message setCreatorUUID(String creatorUUID) {
-        this.creatorUUID = creatorUUID;
+        this.creatorUUID = UUID.fromString(creatorUUID);
         return this;
     }
 
 
-    public String getUuid() {
+    public UUID getUuid() {
         return uuid;
     }
 
     public Message setUuid(String uuid) {
-        this.uuid = uuid;
+        this.uuid = UUID.fromString(uuid);
         return this;
     }
 }

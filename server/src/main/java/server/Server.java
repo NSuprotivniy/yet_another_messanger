@@ -46,7 +46,7 @@ public class Server extends HttpServer {
         if (args.length > 0) {
             config = HttpServerConfigFactory.fromFile(args[0]);
         } else {
-            config = HttpServerConfigFactory.create(8080);
+            config = HttpServerConfigFactory.create(9090);
         }
 
         Server server = new Server(config);

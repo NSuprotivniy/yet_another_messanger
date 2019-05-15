@@ -62,5 +62,9 @@ public class TokenCryptoProvider {
         return verifier.verify(token).getSubject();
     }
 
-
+    public static void main(String[] args) {
+        TokenCryptoProvider instance = TokenCryptoProvider.getInstance();
+        String token = instance.getToken("cae738c0-766b-11e9-9b3f-fd65cfaf2cb8");
+        System.out.println(instance.getSubject(token));
+    }
 }

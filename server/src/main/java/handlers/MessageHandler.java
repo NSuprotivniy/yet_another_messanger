@@ -53,7 +53,7 @@ public class MessageHandler extends RESTHandler {
         }
         Message user = new Message(params);
         cassandraMessage.save(user);
-        MessageCreateResponseSuccess userCreateResponseSuccess = new MessageCreateResponseSuccess(user.getUuid());
+        MessageCreateResponseSuccess userCreateResponseSuccess = new MessageCreateResponseSuccess(user.getUuid().toString());
         return Response.ok(gson.toJson(userCreateResponseSuccess));
     }
 

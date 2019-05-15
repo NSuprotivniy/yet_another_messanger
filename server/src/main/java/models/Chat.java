@@ -4,19 +4,21 @@ import wrappers.chat.ChatCreateRequest.ChatCreateParams;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Chat implements Model {
-    private String uuid;
+    private UUID uuid;
     private String name;
-    private List<String> participantsUUIDs;
-    private String creatorUUID;
+    private List<UUID> participantsUUIDs;
+    private UUID creatorUUID;
 
     public Chat() {}
 
-    public Chat(String name, String[] participantsUUIDS, String creatorUUID) {
+    public Chat(String name, String[] participantsUUIDs, String creatorUUID) {
         this.name = name;
-        this.participantsUUIDs = Arrays.asList(participantsUUIDS);
-        this.creatorUUID = creatorUUID;
+        this.participantsUUIDs = Arrays.stream(participantsUUIDs).map(UUID::fromString).collect(Collectors.toList());
+        this.creatorUUID = UUID.fromString(creatorUUID);
     }
 
     public void setName(String name) {
@@ -35,30 +37,30 @@ public class Chat implements Model {
         return name;
     }
 
-    public String getUuid() {
+    public UUID getUuid() {
         return uuid;
     }
 
     public Chat setUuid(String uuid) {
-        this.uuid = uuid;
+        this.uuid = UUID.fromString(uuid);
         return this;
     }
 
-    public List<String> getParticipantsUUIDs() {
+    public List<UUID> getParticipantsUUIDs() {
         return participantsUUIDs;
     }
 
     public Chat setParticipantsUUIDs(List<String> participantsUUIDs) {
-        this.participantsUUIDs = participantsUUIDs;
+        this.participantsUUIDs = participantsUUIDs.stream().map(UUID::fromString).collect(Collectors.toList());
         return this;
     }
 
-    public String getCreatorUUID() {
+    public UUID getCreatorUUID() {
         return creatorUUID;
     }
 
     public Chat setCreatorUUID(String creatorUUID) {
-        this.creatorUUID = creatorUUID;
+        this.creatorUUID = UUID.fromString(creatorUUID);
         return this;
     }
 }

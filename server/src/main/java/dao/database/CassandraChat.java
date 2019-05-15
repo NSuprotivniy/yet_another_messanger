@@ -36,8 +36,8 @@ public class CassandraChat {
         Insert insert = insertInto( "chats")
                 .value("uuid", literal(uuid))
                 .value("name", literal(chat.getName()))
-                .value("participants_uuids", literal(chat.getName()))
-                .value("creator", literal(chat.getName()));
+                .value("participants_uuids", literal(chat.getParticipantsUUIDs()))
+                .value("creator_uuid", literal(chat.getCreatorUUID()));
         session.execute(insert.build());
         return uuid.toString();
     }
@@ -53,7 +53,7 @@ public class CassandraChat {
         Update updateUsers = QueryBuilder
                 .update("chats")
                 .set(assignments)
-                .whereColumn("uuid").isEqualTo(literal(UUID.fromString(chat.getUuid())));
+                .whereColumn("uuid").isEqualTo(literal(chat.getUuid()));
         session.execute(updateUsers.build());
     }
 
@@ -67,9 +67,9 @@ public class CassandraChat {
         Chat chat = new Chat().setUuid(uuid);
         for (String field : fields) {
             switch (field) {
-                case "name": chat.setName(row.getString("name"));
-                case "participants_uuids": chat.setName(row.getString("participants_uuids"));
-                case "creator": chat.setName(row.getString("creator"));
+                case "name": chat.setName(row.getString("name")); break;
+                case "participants_uuids": chat.setName(row.getString("participants_uuids")); break;
+                case "creator": chat.setName(row.getString("creator_uuid")); break;
             }
         }
         return chat;
