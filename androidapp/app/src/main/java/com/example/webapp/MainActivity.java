@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         CheckBox VisiblePassword;
         String is_logined = null;
         TockenMaster tockenMaster = new TockenMaster();
-         tockenMaster.DeleteThoken();
+        tockenMaster.DeleteThoken();
         is_logined = tockenMaster.readFromFile();
         if (is_logined != null) {
             String [] separated = is_logined.split("\n");

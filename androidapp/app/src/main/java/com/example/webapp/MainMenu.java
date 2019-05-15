@@ -108,7 +108,13 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
         {
             e.printStackTrace();
         }
-        this.all_chats = new ArrayList<String>(Arrays.asList(array));
+        if(array != null) {
+            this.all_chats = new ArrayList<String>(Arrays.asList(array));
+        }
+        else
+        {
+            this.all_chats = new ArrayList<String>();
+        }
         //this.all_chats = all_chats2;
         //Request /chats params:{name: "", uuid: ""}
       //  String [] chats = geChats();
@@ -228,12 +234,19 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
         {
             /*TODO /chats */
             case R.id.chats_all:
+                Intent intent1 = new Intent(this, MainMenu.class);
+                intent1.putExtra("LOGIN", nickname);
+                intent1.putExtra("UUID", uuid);
+                intent1.putExtra("TOKEN", token);
+                startActivity(intent1);
+                finish();
                 break;
 
             case R.id.friends:
                 Intent intent = new Intent(this, Friendlist.class);
                 intent.putExtra("LOGIN", nickname);
                 intent.putExtra("UUID", uuid);
+                intent.putExtra("TOKEN", token);
                 startActivity(intent);
                 finish();
                 break;
