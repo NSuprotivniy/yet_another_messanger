@@ -82,7 +82,7 @@ public class CassandraUser {
         return user;
     }
 
-    public User search(User user, List<String> searchFields, List<String> fields) {
+    public User searchOne(User user, List<String> searchFields, List<String> fields) {
         List<Relation> relations = searchFields.stream().map(field -> {
             Object value = null;
             switch (field) {

@@ -15,9 +15,13 @@ public class SessionStorage {
     private final String KEY_PREFIX = "Session_";
     private final Memcached memcached = Memcached.getInstance();
 
-    public Session get(String token) {
+    public Session get(String token) throws LogonException {
         String uuid = tokenCryptoProvider.getSubject(token);
-        return new Gson().fromJson((String)memcached.get(KEY_PREFIX + uuid), Session.class);
+        String encodedSession = (String)memcached.get(KEY_PREFIX + uuid);
+        if (encodedSession == null) {
+            throw new LogonException();
+        }
+        return new Gson().fromJson(encodedSession, Session.class);
     }
 
     public void set(Session session) throws IOException {

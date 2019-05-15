@@ -8,11 +8,16 @@ import models.Chat;
 import models.User;
 import one.nio.http.Request;
 import one.nio.http.Response;
+import session.LogonException;
 import session.SessionStorage;
+import wrappers.ErrorResponse;
 import wrappers.chat.*;
 import wrappers.message.MessageErrorResponse;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 
@@ -39,7 +44,7 @@ public class ChatHandler extends RESTHandler {
     }
 
     @Override
-    protected Response create(Request request) {
+    protected Response create(Request request) throws LogonException {
         String body = new String(request.getBody());
         Gson gson = new Gson();
         ChatCreateRequest jsonRpcRequest = gson.fromJson(body, ChatCreateRequest.class);
@@ -49,7 +54,7 @@ public class ChatHandler extends RESTHandler {
             put("participants uuids", params.getParticipantsUUIDs());
         }});
         if (emptyFields != null) {
-            return new Response(Response.BAD_REQUEST, gson.toJson(MessageErrorResponse.invalidFieldFormat(emptyFields)).getBytes());
+            return new Response(Response.BAD_REQUEST, gson.toJson(ErrorResponse.invalidFieldFormat(emptyFields)).getBytes());
         }
         String creatorUUID = sessionStorage.get(request.getHeader("token: ")).getUuid();
         Chat chat = new Chat(params, creatorUUID);
@@ -69,7 +74,7 @@ public class ChatHandler extends RESTHandler {
             put("participants uuids", params.getParticipantsUUIDs());
         }});
         if (emptyFields != null) {
-            return new Response(Response.BAD_REQUEST, gson.toJson(MessageErrorResponse.invalidFieldFormat(emptyFields)).getBytes());
+            return new Response(Response.BAD_REQUEST, gson.toJson(ErrorResponse.invalidFieldFormat(emptyFields)).getBytes());
         }
         Chat user = cassandraChat.get(params.getUuid(), asList("uuid"));
         if (user == null) {

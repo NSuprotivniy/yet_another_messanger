@@ -7,13 +7,16 @@ import com.datastax.oss.driver.api.core.uuid.Uuids;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
 import com.datastax.oss.driver.api.querybuilder.delete.Delete;
 import com.datastax.oss.driver.api.querybuilder.insert.Insert;
+import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.select.Select;
 import com.datastax.oss.driver.api.querybuilder.update.Assignment;
 import com.datastax.oss.driver.api.querybuilder.update.Update;
 import models.Chat;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.*;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.literal;
@@ -73,6 +76,37 @@ public class CassandraChat {
             }
         }
         return chat;
+    }
+
+    public List<Chat> search(Chat chat, List<String> searchFields, List<String> fields) {
+        List<Relation> relations = searchFields.stream().map(field -> {
+            Object value = null;
+            switch (field) {
+                case "name": value = chat.getName(); break;
+                case "creator_uuid": value = chat.getCreatorUUID(); break;
+            }
+            return Relation.column(field).isEqualTo(literal(value));
+        }).collect(Collectors.toList());
+        Select select = selectFrom("chats")
+                .columns(fields)
+                .where(relations)
+                .allowFiltering();
+        ResultSet result = session.execute(select.build());
+        List<Chat> chats = new ArrayList<Chat>();
+        for (Row row : result) {
+            Chat newChat = new Chat();
+            for (String field : fields) {
+                switch (field) {
+                    case "uuid": newChat.setUuid(row.getUuid("uuid").toString()); break;
+                    case "name": newChat.setName(row.getString("name")); break;
+                    case "participants_uuids": newChat.setParticipantsUUIDs(row.getList("participants_uuids", String.class)); break;
+                    case "creator_uuid": newChat.setCreatorUUID(row.getString("creator_uuid")); break;
+                }
+            }
+            chats.add(newChat);
+        }
+
+        return chats;
     }
 
     public void delete(String uuid) {

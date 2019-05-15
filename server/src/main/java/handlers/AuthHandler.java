@@ -41,7 +41,7 @@ public class AuthHandler extends RESTHandler {
             return new Response(Response.BAD_REQUEST, gson.toJson(AuthErrorResponse.invalidFieldFormat(emptyFields)).getBytes());
         }
         User user = new User().setEmail(params.getEmail());
-        user = cassandraUser.search(user, asList("email"), asList("uuid", "name", "password_digest", "salt"));
+        user = cassandraUser.searchOne(user, asList("email"), asList("uuid", "name", "password_digest", "salt"));
         if (user != null && user.getPasswordDigest().equals(BCrypt.hashpw(params.getPassword(), user.getSalt()))) {
             Session session = new Session(user.getUuid().toString());
             try {

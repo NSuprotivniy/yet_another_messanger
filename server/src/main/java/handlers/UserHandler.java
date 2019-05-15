@@ -6,14 +6,14 @@ import handlers.utils.Utils;
 import models.User;
 import one.nio.http.Request;
 import one.nio.http.Response;
+import session.LogonException;
 import session.Session;
 import session.SessionStorage;
-import wrappers.message.MessageErrorResponse;
+import wrappers.EmptyResponse;
 import wrappers.user.*;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.UUID;
 
 import static java.util.Arrays.asList;
 
@@ -51,9 +51,12 @@ public class UserHandler extends RESTHandler {
             put("password", params.getPassword());
         }});
         if (emptyFields != null) {
-            return new Response(Response.BAD_REQUEST, gson.toJson(MessageErrorResponse.invalidFieldFormat(emptyFields)).getBytes());
+            return new Response(Response.BAD_REQUEST, gson.toJson(UserErrorResponse.invalidFieldFormat(emptyFields)).getBytes());
         }
         User user = new User(params);
+        if (cassandraUser.searchOne(user, asList("email"), asList("uuid")) != null) {
+            return new Response(Response.BAD_REQUEST, gson.toJson(UserErrorResponse.alreadyExists(params.getEmail())).getBytes());
+        }
         String uuid = cassandraUser.save(user);
         Session session = new Session(uuid);
         try {
@@ -69,7 +72,7 @@ public class UserHandler extends RESTHandler {
     }
 
     @Override
-    protected Response edit(Request request) {
+    protected Response edit(Request request) throws LogonException {
         String body = new String(request.getBody());
         Gson gson = new Gson();
         UserUpdateRequest jsonRpcRequest = gson.fromJson(body, UserUpdateRequest.class);
@@ -80,29 +83,25 @@ public class UserHandler extends RESTHandler {
             put("password", params.getPassword());
         }});
         if (emptyFields != null) {
-            return new Response(Response.BAD_REQUEST, gson.toJson(MessageErrorResponse.invalidFieldFormat(emptyFields)).getBytes());
+            return new Response(Response.BAD_REQUEST, gson.toJson(UserErrorResponse.invalidFieldFormat(emptyFields)).getBytes());
         }
-        User user = cassandraUser.get(params.getUuid(), asList("uuid"));
+        String uuid = sessionStorage.get(request.getHeader("token: ")).getUuid();
+        User user = cassandraUser.get(uuid, asList("uuid"));
         if (user == null) {
-            return new Response(Response.NOT_FOUND, gson.toJson(UserErrorResponse.notFound(params.getUuid())).getBytes());
+            return new Response(Response.NOT_FOUND, gson.toJson(UserErrorResponse.notFound(uuid)).getBytes());
         }
         user.setName(params.getName())
                 .setEmail(params.getEmail())
                 .setPassword(params.getPassword());
         cassandraUser.update(user, asList("uuid", "name", "email", "password_digest", "salt"));
-        return Response.ok(gson.toJson(new UserUpdateResponseSuccess(params.getUuid())));
+        return Response.ok(gson.toJson(new UserUpdateResponseSuccess(uuid)));
     }
 
     @Override
-    protected Response delete(Request request) {
+    protected Response delete(Request request) throws LogonException {
         String body = new String(request.getBody());
-        Gson gson = new Gson();
-        UserDeleteRequest jsonRpcRequest = gson.fromJson(body, UserDeleteRequest.class);
-        UserDeleteRequest.UserDeleteRequestParams params = jsonRpcRequest.getParams();
-        if (params.getUuid() == null)  {
-            return new Response(Response.BAD_REQUEST, gson.toJson(UserErrorResponse.invalidFieldFormat("uuid")).getBytes());
-        }
-        cassandraUser.delete(params.getUuid());
-        return Response.ok(gson.toJson(new UserDeleteResponseSuccess(params.getUuid())));
+        String uuid = sessionStorage.get(request.getHeader("token: ")).getUuid();
+        cassandraUser.delete(uuid);
+        return Response.ok(new Gson().toJson(new EmptyResponse()));
     }
 }

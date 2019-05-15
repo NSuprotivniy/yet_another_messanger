@@ -2,6 +2,7 @@ package server;
 
 import handlers.AuthHandler;
 import handlers.ChatHandler;
+import handlers.ChatsHandler;
 import handlers.UserHandler;
 import one.nio.http.*;
 import one.nio.util.Utf8;
@@ -12,6 +13,14 @@ public class Server extends HttpServer {
     public Server(HttpServerConfig config) throws IOException {
         super(config);
     }
+
+    @Path("/chats")
+    public Response handleChats(Request request, HttpSession session) {
+        ChatsHandler chatsHandler = new ChatsHandler();
+        Response response = chatsHandler.handle(request);
+        return response;
+    }
+
 
     @Path("/chat")
     public Response handleChat(Request request, HttpSession session) {

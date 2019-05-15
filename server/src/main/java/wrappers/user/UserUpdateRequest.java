@@ -10,7 +10,6 @@ public class UserUpdateRequest extends JsonRPCRequestWrapper {
     }
 
     public class UserUpdateRequestParams {
-        private String uuid;
         private String name;
         private String email;
         private String password;
@@ -25,10 +24,6 @@ public class UserUpdateRequest extends JsonRPCRequestWrapper {
 
         public String getPassword() {
             return password;
-        }
-
-        public String getUuid() {
-            return uuid;
         }
     }
 }
