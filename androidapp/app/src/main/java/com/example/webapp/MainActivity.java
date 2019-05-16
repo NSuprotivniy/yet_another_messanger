@@ -37,13 +37,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button LoginButton, RegisterButton;
         CheckBox VisiblePassword;
-
         String is_logined = null;
         TockenMaster tockenMaster = new TockenMaster();
+        tockenMaster.DeleteThoken();
         is_logined = tockenMaster.readFromFile();
         if (is_logined != null) {
             String [] separated = is_logined.split("\n");
             open_main_menu(separated[0], separated[1], null);
+            //open_main_menu(separated[0], separated[1], null);
         }
 
 
@@ -77,15 +78,15 @@ public class MainActivity extends AppCompatActivity {
                 password = Password.getText().toString();
 
                 //authorize request
-               // open_main_menu("123uuid123\nKaneS");
-               // finish();
+                // open_main_menu("123uuid123\nKaneS");
+                // finish();
                 SupaLoginer loginer = new SupaLoginer(login, password, MainActivity.this);
                 String all = loginer.TryToLogin();
+                String[] separated = all.split("\n");
 
-                if (all != null) {
-                    String[] separated = all.split("\n");
+
+                if (!separated[0].equals("null") && !separated[1].equals("null") && !separated[2].equals("null")) {
                     open_main_menu(separated[0], separated[1], separated[2]);
-                    finish();
                 }
             }
         });
@@ -106,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("UUID", uuid);
         intent.putExtra("TOKEN", token);
         startActivity(intent);
+        finish();
     }
 
     private void open_register_menu() {

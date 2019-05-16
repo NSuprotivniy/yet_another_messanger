@@ -35,20 +35,22 @@ public class SendJSON extends AsyncTask<String, Void, String> {
     protected String doInBackground(String... params) {
 
 
-            String data = "";
-            int response_code = 0;
+        String data = "";
+        String tocken = "";
+        int response_code = 0;
 
         HttpURLConnection httpURLConnection = null;
         try {
 
             httpURLConnection = (HttpURLConnection) new URL(params[0]).openConnection();
-            httpURLConnection.setRequestMethod(params[2]);
+                httpURLConnection.setRequestMethod(params[2]);
             httpURLConnection.setReadTimeout(this.readTimeOut);
             httpURLConnection.setConnectTimeout(this.connectTimeOut);
             if(params.length > 3)
             {
-                //
-                httpURLConnection.setRequestProperty("uuid", params[3]);
+                if (params[3] != null) {
+                    httpURLConnection.setRequestProperty("uuid", params[3]);
+                }
                 httpURLConnection.setRequestProperty("token", params[4]);
             }
             if(params[1] != null)
@@ -74,6 +76,7 @@ public class SendJSON extends AsyncTask<String, Void, String> {
                 inputStreamData = inputStreamReader.read();
                 data += current;
             }
+            tocken = httpURLConnection.getHeaderField("token");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -83,16 +86,17 @@ public class SendJSON extends AsyncTask<String, Void, String> {
         }
         if (response_code != 200)
         {
-            return Integer.toString(response_code);
+            String aaa =  Integer.toString(response_code);
+            return aaa;
         }
-            return data;
-        }
+        return data + "\n" +tocken;
+    }
 
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            Log.e("TAG", result);
-            //return result;
-        }
+    @Override
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+        Log.e("TAG", result);
+        //return result;
+    }
 
 }

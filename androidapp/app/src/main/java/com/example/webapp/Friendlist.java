@@ -3,6 +3,7 @@ package com.example.webapp;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -23,17 +24,22 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static com.example.webapp.MainMenu.ADD_CHAT;
+
 public class Friendlist extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     private DrawerLayout drawLayout;
-    private String nickname, uuid;
-    private String[] all_friends;
+    private String nickname, uuid, tocken;
+    private ArrayList<String> all_friends;
+    static final int ADD_FRIEND = 2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,10 +50,11 @@ public class Friendlist extends AppCompatActivity implements NavigationView.OnNa
         drawLayout = findViewById(R.id.draw_layout);
         nickname = extras.getString("LOGIN");
         uuid = extras.getString("UUID");
-
+        tocken = extras.getString("TOKEN");
         ListView friend_list = findViewById(R.id.Chats);
-        int screenHeight = ((WindowManager)this.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getHeight();
-        LinearLayout.LayoutParams vi_params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, (int)(screenHeight*0.70));
+        Point size = new Point();
+        ((WindowManager)this.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(size);
+        LinearLayout.LayoutParams vi_params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int)(size.y*0.70));
         friend_list.setLayoutParams(vi_params);
 
         setSupportActionBar(toolbar);
@@ -58,9 +65,10 @@ public class Friendlist extends AppCompatActivity implements NavigationView.OnNa
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Friendlist.this, AddFriend.class);
-                Bundle b = new Bundle();
-                b.putString("UUID", uuid);
-                startActivity(intent);
+                intent.putExtra("LOGIN", nickname);
+                intent.putExtra("UUID", uuid);
+                intent.putExtra("TOKEN", tocken);
+                startActivityForResult(intent, ADD_FRIEND);
             }
         });
 
@@ -73,14 +81,57 @@ public class Friendlist extends AppCompatActivity implements NavigationView.OnNa
                 R.string.navigation_open, R.string.navigation_close);
         drawLayout.addDrawerListener(toggle);
         toggle.syncState();
-        String [] all_chats2 = {"Vasya\nuuid1", "Petya\nuuid2"};
-        SendJSON sender = new SendJSON(10000, 10000);
-        //TODO remove this plug
-        //Request /chats params:{name: "", uuid: ""}
-        //  String [] friend = geChats();
-        this.all_friends = all_chats2;
-        //Request /chats params:{name: "", uuid: ""}
-        //  String [] chats = geChats();
+        //String [] all_chats2 = {"Vasya\nuuid1", "Petya\nuuid2"};
+        SendJSON sender = new SendJSON(1000000, 100000);
+        JSONObject postData = new JSONObject();
+        JSONObject params = new JSONObject();
+        String result = "";
+        try {
+            postData.put("id", "1234");
+            postData.put("jsonrpc", "2.0");
+            postData.put("method", "creat_user");
+            postData.put("params", params);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+        try{
+            String IP = new Kostyl().IP;
+            result = sender.execute(IP + "/contacts", null, "GET", null, tocken).get();
+        }catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+        catch(ExecutionException e)
+        {
+            e.printStackTrace();
+        }
+        String result2[] = result.split("\n");
+        JSONObject recievedData, params_json;
+        JSONArray all_uuids, all_names;
+        String[] array = null;
+        try {
+            recievedData = new JSONObject(result2[0]);
+            params_json = recievedData.getJSONObject("params");
+            all_uuids = params_json.getJSONArray("uuids");
+            all_names = params_json.getJSONArray("names");
+            array = new String[all_uuids.length()];
+            for (int i = 0; i < all_uuids.length(); i++) {
+                array[i] = all_names.get(i) + "\n" + all_uuids.get(i);
+            }
+
+        }catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        if(array != null) {
+            this.all_friends = new ArrayList<String>(Arrays.asList(array));
+        }
+        else
+        {
+            this.all_friends = new ArrayList<String>();
+        }
         if (all_friends != null)
         {
             draw_friends();
@@ -102,8 +153,8 @@ public class Friendlist extends AppCompatActivity implements NavigationView.OnNa
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int index, long l) {
                 //Object clickItemObj = adapterView.getAdapter().getItem(index);
-                String[] chosen = all_friends[index].split("\n");
-                //TODO get friend with uuid, but i get
+               // String[] chosen = all_friends[index].split("\n");
+                //TODO get friend with uuid, that i get
 
             }
         });
@@ -141,6 +192,33 @@ public class Friendlist extends AppCompatActivity implements NavigationView.OnNa
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data == null) {return;}
+        String result = data.getStringExtra("name");
+        if (result.equals(""))
+        {
+            return;
+        }
+        String cur_uuid, cur_name;
+        JSONObject recievedData, params_json;
+        String result2[] = result.split("\n");
+        try {
+            recievedData = new JSONObject(result2[1]);
+            params_json = recievedData.getJSONObject("params");
+            cur_uuid = params_json.getString("uuid");
+            cur_name = params_json.getString("name");
+
+        }catch (JSONException e)
+        {
+            e.printStackTrace();
+            return;
+        }
+        result = cur_name + "\n" + cur_uuid;
+        all_friends.add(result);
+        draw_friends();
+    }
+
+    @Override
     public void onCreateNavigateUpTaskStack(TaskStackBuilder builder) {
         super.onCreateNavigateUpTaskStack(builder);
 
@@ -155,11 +233,18 @@ public class Friendlist extends AppCompatActivity implements NavigationView.OnNa
                 Intent intent = new Intent(this, MainMenu.class);
                 intent.putExtra("LOGIN", nickname);
                 intent.putExtra("UUID", uuid);
+                intent.putExtra("TOKEN", tocken);
                 startActivity(intent);
                 finish();
                 break;
 
             case R.id.friends:
+                Intent intent2 = new Intent(this, Friendlist.class);
+                intent2.putExtra("LOGIN", nickname);
+                intent2.putExtra("UUID", uuid);
+                intent2.putExtra("TOKEN", tocken);
+                startActivity(intent2);
+                finish();
                 break;
 
         }

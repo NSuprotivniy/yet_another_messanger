@@ -90,9 +90,10 @@ public class Register extends AppCompatActivity {
                         e.printStackTrace();
                         return;
                     }
-                    SendJSON sender = new SendJSON(10000, 10000);
+                    SendJSON sender = new SendJSON(1000000, 1000000);
                     try{
-                        result = sender.execute("http://192.168.43.15:8080/user", postData.toString(), "POST").get();
+                        String IP = new Kostyl().IP;
+                        result = sender.execute(IP + "/user", postData.toString(), "POST").get();
                     }catch (InterruptedException e)
                     {
                         e.printStackTrace();
@@ -103,7 +104,8 @@ public class Register extends AppCompatActivity {
                         e.printStackTrace();
                         return;
                     }
-
+                    String result2[] = result.split("\n");
+                    result = result2[0];
                     if (result.length() > 4)//на случай, если там код, а не тело
                     {
                         JSONObject recievedData, params_json;
@@ -112,7 +114,6 @@ public class Register extends AppCompatActivity {
                             recievedData = new JSONObject(result);
                             params_json = recievedData.getJSONObject("params");
                             uuid = params_json.getString("uuid");
-                            token = params_json.getString("token");
 
                         }catch (JSONException e)
                         {
@@ -120,7 +121,7 @@ public class Register extends AppCompatActivity {
                             return;
                         }
                         //String prov = tockenMaster.readFromFile(Register.this);
-                        tockenMaster.writeToFile(uuid, token);
+                        tockenMaster.writeToFile(uuid, result2[1]);
 
                         finish();
                     }

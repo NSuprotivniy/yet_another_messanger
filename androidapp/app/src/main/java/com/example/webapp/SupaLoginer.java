@@ -55,9 +55,10 @@ public class SupaLoginer
             e.printStackTrace();
             return null;
         }
-        SendJSON sender = new SendJSON(10000, 10000);
+        SendJSON sender = new SendJSON(1000000, 1000000);
         try{
-            result = sender.execute("http://192.168.0.107:8080/auth", postData.toString(), "POST").get();
+            String IP = new Kostyl().IP;
+            result = sender.execute(IP + "/auth", postData.toString(), "POST").get();
         }catch (InterruptedException e)
         {
             e.printStackTrace();
@@ -72,12 +73,13 @@ public class SupaLoginer
         if (result.length() > 4)//на случай, если там код, а не тело
         {
             JSONObject recievedData, params_json;
+            String kostyl[] = result.split("\n");
 
             try {
-                recievedData = new JSONObject(result);
+                recievedData = new JSONObject(kostyl[0]);
                 params_json = recievedData.getJSONObject("params");
                 uuid = params_json.getString("uuid");
-                token = params_json.getString("token");
+                token = kostyl[1];
                 name = params_json.getString("name");
 
             }catch (JSONException e)
