@@ -9,4 +9,8 @@ public class UserErrorResponse extends ErrorResponse {
         return new ResponseErrorWrapper("User is already existed: " + email);
     }
 
+    public static ResponseErrorWrapper contactsNotFound() {
+        return new ResponseErrorWrapper("Contact not found");
+    }
+
 }

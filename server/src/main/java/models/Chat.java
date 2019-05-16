@@ -4,21 +4,23 @@ import wrappers.chat.ChatCreateRequest.ChatCreateParams;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class Chat implements Model {
     private UUID uuid;
     private String name;
-    private List<UUID> participantsUUIDs;
+    private Set<UUID> participantsUUIDs;
     private UUID creatorUUID;
 
     public Chat() {}
 
     public Chat(String name, String[] participantsUUIDs, String creatorUUID) {
         this.name = name;
-        this.participantsUUIDs = Arrays.stream(participantsUUIDs).map(UUID::fromString).collect(Collectors.toList());
+        this.participantsUUIDs = Arrays.stream(participantsUUIDs).map(UUID::fromString).collect(Collectors.toSet());
         this.creatorUUID = UUID.fromString(creatorUUID);
+        this.participantsUUIDs.add(this.creatorUUID);
     }
 
     public void setName(String name) {
@@ -46,12 +48,12 @@ public class Chat implements Model {
         return this;
     }
 
-    public List<UUID> getParticipantsUUIDs() {
+    public Set<UUID> getParticipantsUUIDs() {
         return participantsUUIDs;
     }
 
-    public Chat setParticipantsUUIDs(List<String> participantsUUIDs) {
-        this.participantsUUIDs = participantsUUIDs.stream().map(UUID::fromString).collect(Collectors.toList());
+    public Chat setParticipantsUUIDs(Set<String> participantsUUIDs) {
+        this.participantsUUIDs = participantsUUIDs.stream().map(UUID::fromString).collect(Collectors.toSet());
         return this;
     }
 

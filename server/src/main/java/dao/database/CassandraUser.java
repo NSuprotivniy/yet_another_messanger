@@ -13,9 +13,7 @@ import com.datastax.oss.driver.api.querybuilder.update.Assignment;
 import com.datastax.oss.driver.api.querybuilder.update.Update;
 import models.User;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.*;
@@ -66,10 +64,10 @@ public class CassandraUser {
                 .whereColumn("uuid").isEqualTo(literal(UUID.fromString(uuid)))
                 .allowFiltering();
         ResultSet result = session.execute(select.build());
-        if (result.all().size() == 0) {
+        Row row =  result.one();
+        if (row == null) {
             return null;
         }
-        Row row = result.all().get(0);
         User user = new User().setUuid(uuid);
         for (String field : fields) {
             switch (field) {
@@ -117,5 +115,35 @@ public class CassandraUser {
     public void delete(String uuid) {
         Delete deleteUser = deleteFrom("users").whereColumn("uuid").isEqualTo(literal(UUID.fromString(uuid)));
         session.execute(deleteUser.build());
+    }
+
+    public boolean addContact(String uuid, User contact) {
+        Update update = QueryBuilder.update("users")
+                .appendSetElement("contacts_uuids", literal(contact.getUuid()))
+                .whereColumn("uuid").isEqualTo(literal(UUID.fromString(uuid)));
+        System.out.println(update.build().getQuery());
+        ResultSet result = session.execute(update.build());
+        return result.wasApplied();
+    }
+
+    public boolean removeContact(String uuid, User contact) {
+        Update update = QueryBuilder.update("users")
+                .removeSetElement("contacts_uuids", literal(contact.getUuid()))
+                .whereColumn("uuid").isEqualTo(literal(UUID.fromString(uuid)));
+        ResultSet result = session.execute(update.build());
+        return result.wasApplied();
+    }
+
+    public List<User> getContacts(String uuid, List<String> fields) {
+        Select select = selectFrom("users")
+                .columns("contacts_uuids")
+                .whereColumn("uuid").isEqualTo(literal(UUID.fromString(uuid)))
+                .allowFiltering();
+        Set<UUID> contactsUUIDs = session.execute(select.build()).one().getSet("contacts_uuids", UUID.class);
+        List<User> users = new ArrayList<User>();
+        for (UUID contactUUID : contactsUUIDs) {
+            users.add(get(contactUUID.toString(), fields));
+        }
+        return users;
     }
 }

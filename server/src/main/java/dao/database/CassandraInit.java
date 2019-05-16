@@ -33,7 +33,8 @@ public class CassandraInit {
                             .withColumn("name", DataTypes.TEXT)
                             .withColumn("email", DataTypes.TEXT)
                             .withColumn("password_digest", DataTypes.TEXT)
-                            .withColumn("salt", DataTypes.TEXT);
+                            .withColumn("salt", DataTypes.TEXT)
+                            .withColumn("contacts_uuids", DataTypes.setOf(DataTypes.UUID));
 
             session.execute(createTable.build());
 
@@ -41,7 +42,7 @@ public class CassandraInit {
                     createTable("chats").ifNotExists()
                             .withPartitionKey("uuid", DataTypes.UUID)
                             .withColumn("name", DataTypes.TEXT)
-                            .withColumn("participants_uuids", DataTypes.listOf(DataTypes.UUID))
+                            .withColumn("participants_uuids", DataTypes.setOf(DataTypes.UUID))
                             .withColumn("creator_uuid", DataTypes.UUID);
 
             session.execute(createTable.build());
