@@ -11,6 +11,7 @@ import java.io.Serializable;
 public class Session implements Serializable {
     private final String uuid;
     private final String token;
+
     private transient final TokenCryptoProvider tokenCryptoProvider = TokenCryptoProvider.getInstance();
 
     public Session(String uuid) {

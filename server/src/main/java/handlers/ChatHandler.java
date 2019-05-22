@@ -2,15 +2,19 @@ package handlers;
 
 import com.google.gson.Gson;
 import dao.database.CassandraChat;
+import dao.database.CassandraMessage;
 import handlers.RESTHandler;
 import handlers.utils.Utils;
 import models.Chat;
+import models.Message;
 import models.User;
 import one.nio.http.Request;
 import one.nio.http.Response;
+import server.WebsocketServer;
 import session.LogonException;
 import session.SessionStorage;
 import wrappers.ErrorResponse;
+import wrappers.auth.AuthErrorResponse;
 import wrappers.chat.*;
 import wrappers.message.MessageErrorResponse;
 
@@ -23,23 +27,25 @@ import static java.util.Arrays.asList;
 
 public class ChatHandler extends RESTHandler {
 
+    private final CassandraMessage cassandraMessage = CassandraMessage.getInstance();
     private final CassandraChat cassandraChat = CassandraChat.getInstance();
     private final SessionStorage sessionStorage = SessionStorage.getInstance();
+    private final WebsocketServer websocketServer = WebsocketServer.getIstance();
 
     @Override
     protected Response get(Request request) {
-        String body = new String(request.getBody());
         Gson gson = new Gson();
-        ChatGetRequest jsonRpcRequest = gson.fromJson(body, ChatGetRequest.class);
-        String uuid = jsonRpcRequest.getParams().getUuid();
+        String uuid = request.getHeader("uuid: ");
         if (Utils.fieldIsBlank(uuid)) {
             return new Response(Response.BAD_REQUEST, gson.toJson(ChatErrorResponse.invalidFieldFormat("uuid")).getBytes());
         }
-        Chat chat = cassandraChat.get(uuid, asList("uuid", "name", "creator_uuid"));
+        Chat chat = cassandraChat.get(uuid, asList("uuid", "name"));
         if (chat == null) {
             return new Response(Response.NOT_FOUND, gson.toJson(ChatErrorResponse.notFound(uuid)).getBytes());
         }
-        ChatGetResponseSuccess responseSuccess = new ChatGetResponseSuccess(chat.getName());
+        List<Message> messages = cassandraMessage.search(new Message().setChatUUID(chat.getUuid()), asList("chat_uuid"), asList("uuid"));
+        String[] messagesUUIDs = messages.stream().map(Message::getUuid).map(UUID::toString).toArray(String[]::new);
+        ChatGetResponseSuccess responseSuccess = new ChatGetResponseSuccess(chat.getName(), messagesUUIDs);
         return Response.ok(gson.toJson(responseSuccess));
     }
 
@@ -54,9 +60,9 @@ public class ChatHandler extends RESTHandler {
             put("participants uuids", params.getParticipantsUUIDs());
         }});
         if (emptyFields != null) {
-            return new Response(Response.BAD_REQUEST, gson.toJson(ErrorResponse.invalidFieldFormat(emptyFields)).getBytes());
+            return new Response(Response.BAD_REQUEST, gson.toJson(ChatErrorResponse.invalidFieldFormat(emptyFields)).getBytes());
         }
-        String creatorUUID = sessionStorage.get(request.getHeader("token: ")).getUuid();
+        String creatorUUID = sessionStorage.get(request.getHeader("token: ")).getUuid();;
         Chat chat = new Chat(params, creatorUUID);
         String uuid = cassandraChat.save(chat);
         ChatCreateResponseSuccess userCreateResponseSuccess = new ChatCreateResponseSuccess(uuid);
@@ -96,5 +102,14 @@ public class ChatHandler extends RESTHandler {
         }
         cassandraChat.delete(params.getUuid());
         return Response.ok(gson.toJson(new ChatDeleteResponseSuccess(params.getUuid())));
+    }
+
+    public void broadcastChat(Chat message) {
+        String body = new Gson().toJson(new ChatCreateBroadcast(message.getUuid().toString(), message.getParticipantsUUIDs().stream().map(UUID::toString).toArray(String[]::new)));
+        for (UUID participantsUUID : message.getParticipantsUUIDs()) {
+            if (participantsUUID.equals(message.getCreatorUUID()) == false) {
+                websocketServer.sendMessage(participantsUUID.toString(), body );
+            }
+        }
     }
 }

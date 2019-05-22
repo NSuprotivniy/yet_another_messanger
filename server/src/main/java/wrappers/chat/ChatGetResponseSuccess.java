@@ -5,8 +5,8 @@ import wrappers.JsonRPCRequestWrapper;
 public class ChatGetResponseSuccess extends JsonRPCRequestWrapper {
     private ChatGetResponseSuccessParams params;
 
-    public ChatGetResponseSuccess(String name) {
-        this.params = new ChatGetResponseSuccessParams(name);
+    public ChatGetResponseSuccess(String name, String[] messagesUUIDs) {
+        this.params = new ChatGetResponseSuccessParams(name, messagesUUIDs);
     }
 
     public ChatGetResponseSuccessParams getParams() {
@@ -15,9 +15,11 @@ public class ChatGetResponseSuccess extends JsonRPCRequestWrapper {
 
     public class ChatGetResponseSuccessParams {
         private String name;
+        private String[] messagesUUIDs;
 
-        public ChatGetResponseSuccessParams(String name) {
+        public ChatGetResponseSuccessParams(String name, String[] messagesUUIDs) {
             this.name = name;
+            this.messagesUUIDs = messagesUUIDs;
         }
 
         public String getName() {

@@ -25,6 +25,13 @@ public class Server extends HttpServer {
         return response;
     }
 
+    @Path("/message")
+    public Response handleMessage(Request request, HttpSession session) {
+        MessageHandler messageHandler = new MessageHandler();
+        Response response = messageHandler.handle(request);
+        return response;
+    }
+
     @Path("/user")
     public Response handleUser(Request request, HttpSession session) {
         UserHandler userHandler = new UserHandler();

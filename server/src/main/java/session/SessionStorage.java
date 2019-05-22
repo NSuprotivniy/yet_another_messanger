@@ -24,6 +24,14 @@ public class SessionStorage {
         return new Gson().fromJson(encodedSession, Session.class);
     }
 
+    public Session getByUUID(String uuid) throws LogonException {
+        String encodedSession = (String)memcached.get(KEY_PREFIX + uuid);
+        if (encodedSession == null) {
+            throw new LogonException();
+        }
+        return new Gson().fromJson(encodedSession, Session.class);
+    }
+
     public void set(Session session) throws IOException {
         memcached.set(KEY_PREFIX + session.getUuid(), new Gson().toJson(session));
     }

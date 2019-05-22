@@ -17,7 +17,8 @@ public class Message {
         this.creatorUUID = UUID.fromString(creatorUUID);
     }
     public Message(MessageCreateRequest.MessageCreateParams params) {
-        this(params.getText(), params.getChatUUID(), params.getCreatorUUID());
+        this.text = params.getText();
+        this.chatUUID = UUID.fromString(params.getChatUUID());
     }
 
     public String getText() {
@@ -33,8 +34,8 @@ public class Message {
         return chatUUID;
     }
 
-    public Message setChatUUID(String chatUUID) {
-        this.chatUUID = UUID.fromString(chatUUID);
+    public Message setChatUUID(UUID chatUUID) {
+        this.chatUUID = chatUUID;
         return this;
     }
 
@@ -47,6 +48,10 @@ public class Message {
         return this;
     }
 
+    public Message setCreatorUUID(UUID creatorUUID) {
+        this.creatorUUID = creatorUUID;
+        return this;
+    }
 
     public UUID getUuid() {
         return uuid;
@@ -54,6 +59,11 @@ public class Message {
 
     public Message setUuid(String uuid) {
         this.uuid = UUID.fromString(uuid);
+        return this;
+    }
+
+    public Message setUuid(UUID uuid) {
+        this.uuid = uuid;
         return this;
     }
 }

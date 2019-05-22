@@ -12,7 +12,6 @@ public class MessageCreateRequest extends JsonRPCRequestWrapper {
     public class MessageCreateParams {
         private String text;
         private String chatUUID;
-        private String creatorUUID;
 
         public String getText() {
             return text;
@@ -20,10 +19,6 @@ public class MessageCreateRequest extends JsonRPCRequestWrapper {
 
         public String getChatUUID() {
             return chatUUID;
-        }
-
-        public String getCreatorUUID() {
-            return creatorUUID;
         }
     }
 }

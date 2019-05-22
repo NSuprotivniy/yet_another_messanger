@@ -52,8 +52,8 @@ public class Chat implements Model {
         return participantsUUIDs;
     }
 
-    public Chat setParticipantsUUIDs(Set<String> participantsUUIDs) {
-        this.participantsUUIDs = participantsUUIDs.stream().map(UUID::fromString).collect(Collectors.toSet());
+    public Chat setParticipantsUUIDs(Set<UUID> participantsUUIDs) {
+        this.participantsUUIDs = participantsUUIDs;
         return this;
     }
 

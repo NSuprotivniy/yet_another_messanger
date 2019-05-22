@@ -71,7 +71,7 @@ public class CassandraChat {
         for (String field : fields) {
             switch (field) {
                 case "name": chat.setName(row.getString("name")); break;
-                case "participants_uuids": chat.setParticipantsUUIDs(row.getSet("participants_uuids", String.class)); break;
+                case "participants_uuids": chat.setParticipantsUUIDs(row.getSet("participants_uuids", UUID.class)); break;
                 case "creator": chat.setName(row.getString("creator_uuid")); break;
             }
         }
@@ -99,7 +99,7 @@ public class CassandraChat {
                 switch (field) {
                     case "uuid": newChat.setUuid(row.getUuid("uuid").toString()); break;
                     case "name": newChat.setName(row.getString("name")); break;
-                    case "participants_uuids": newChat.setParticipantsUUIDs(row.getSet("participants_uuids", String.class)); break;
+                    case "participants_uuids": newChat.setParticipantsUUIDs(row.getSet("participants_uuids", UUID.class)); break;
                     case "creator_uuid": newChat.setCreatorUUID(row.getString("creator_uuid")); break;
                 }
             }
