@@ -29,6 +29,12 @@
         <activity
             android:name=".AddChat"
             android:theme="@style/AppTheme.PopUpTheme" />
+        <activity android:name=".Chat"></activity>
+        <service
+            android:name=".UberWebSocket"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>

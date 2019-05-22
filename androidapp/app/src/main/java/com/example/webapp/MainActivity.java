@@ -35,11 +35,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void main_activity() {
         setContentView(R.layout.activity_main);
+       // open_main_menu("aa", "aa", "bb");
+       // UberWebSocket aa = new UberWebSocket();
+       // aa.connectWebSocket();
         Button LoginButton, RegisterButton;
         CheckBox VisiblePassword;
         String is_logined = null;
         TockenMaster tockenMaster = new TockenMaster();
-        tockenMaster.DeleteThoken();
+       // tockenMaster.DeleteThoken();
         is_logined = tockenMaster.readFromFile();
         if (is_logined != null) {
             String [] separated = is_logined.split("\n");
@@ -99,8 +102,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void open_main_menu(String uuid, String token, String login) {
+        Intent supa_service = new Intent(getApplicationContext(), UberWebSocket.class);
+        supa_service.putExtra("TOKEN", token);
+        //startService(new Intent(getApplicationContext(), UberWebSocket.class));
+        startService(supa_service);
         Intent intent = new Intent(this, MainMenu.class);
-
         //String[] separated = uuid.split("\n");
         //TODO запрос на логин от юзера
         intent.putExtra("LOGIN", login);
