@@ -1,13 +1,17 @@
 package com.example.webapp;
 
 import android.app.TaskStackBuilder;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -38,12 +42,17 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
     private String nickname, uuid, token;
     private ArrayList<String> all_chats;
     static final int ADD_CHAT = 1;
+    private String message;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
         Bundle extras = getIntent().getExtras();
         Toolbar toolbar = findViewById(R.id.toolbar);
+
 
         drawLayout = findViewById(R.id.draw_layout);
         nickname = extras.getString("LOGIN");
@@ -145,10 +154,14 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
         chats_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int index, long l) {
-                //Object clickItemObj = adapterView.getAdapter().getItem(index);
-                //String[] chosen = all_chats[index].split("\n");
-                //TODO get chat with uuid by index from all_chats
 
+                String[] chosen = all_chats.get(index).split("\n");
+                Intent intent = new Intent(MainMenu.this, Chat.class);
+                intent.putExtra("UUID", uuid);
+                intent.putExtra("TOKEN", token);
+                intent.putExtra("CHAT", chosen[1]);
+                startActivity(intent);
+                finish();
             }
         });
 

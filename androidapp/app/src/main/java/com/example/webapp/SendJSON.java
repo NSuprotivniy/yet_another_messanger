@@ -57,6 +57,7 @@ public class SendJSON extends AsyncTask<String, Void, String> {
             {
                 httpURLConnection.setDoOutput(true);
                 DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
+                //httpURLConnection.setRequestMethod(params[2]);
                 wr.writeBytes( params[1]);
                 wr.flush();
                 wr.close();
