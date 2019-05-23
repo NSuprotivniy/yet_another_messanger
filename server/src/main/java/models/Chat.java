@@ -43,6 +43,11 @@ public class Chat implements Model {
         return uuid;
     }
 
+    public Chat setUuid(UUID uuid) {
+        this.uuid = uuid;
+        return this;
+    }
+
     public Chat setUuid(String uuid) {
         this.uuid = UUID.fromString(uuid);
         return this;

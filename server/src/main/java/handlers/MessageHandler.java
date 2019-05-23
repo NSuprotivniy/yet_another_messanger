@@ -97,8 +97,13 @@ public class MessageHandler extends RESTHandler {
     }
 
     public void broadcastMessage(Message message) {
-        Chat chat = cassandraChat.get(message.getChatUUID().toString(), asList("participants_uuids"));
-        MessageCreateBroadcast messageCreateBroadcast = new MessageCreateBroadcast(message.getUuid().toString(), message.getText(), message.getCreatorUUID().toString());
+        Chat chat = cassandraChat.get(message.getChatUUID().toString(), asList("participants_uuids", "name"));
+        MessageCreateBroadcast messageCreateBroadcast = new MessageCreateBroadcast(
+                message.getUuid().toString(),
+                message.getText(),
+                message.getCreatorUUID().toString(),
+                message.getChatUUID().toString(),
+                chat.getName());
         String body = new Gson().toJson(messageCreateBroadcast);
         for (UUID participantsUUID : chat.getParticipantsUUIDs()) {
             websocketServer.sendMessage(participantsUUID.toString(), body);

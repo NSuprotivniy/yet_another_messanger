@@ -45,4 +45,6 @@ public class Memcached {
     public Object get(String key) {
         return memcachedClient.get(key);
     }
+
+    public void delete(String key) { memcachedClient.delete(key); }
 }

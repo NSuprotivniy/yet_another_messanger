@@ -121,7 +121,6 @@ public class CassandraUser {
         Update update = QueryBuilder.update("users")
                 .appendSetElement("contacts_uuids", literal(contact.getUuid()))
                 .whereColumn("uuid").isEqualTo(literal(UUID.fromString(uuid)));
-        System.out.println(update.build().getQuery());
         ResultSet result = session.execute(update.build());
         return result.wasApplied();
     }

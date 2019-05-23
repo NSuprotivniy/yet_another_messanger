@@ -52,14 +52,10 @@ public class ContactHandler extends RESTHandler {
 
     @Override
     protected Response delete(Request request) throws LogonException {
-        String body = new String(request.getBody());
         Gson gson = new Gson();
-        ContactDeleteRequest.ContactDeleteRequestParams params = gson.fromJson(body, ContactDeleteRequest.class).getParams();
-        if (Utils.fieldIsBlank(params.getUuid())) {
-            return new Response(Response.BAD_REQUEST, gson.toJson(ErrorResponse.invalidFieldFormat("uuid")).getBytes());
-        }
         String uuid = sessionStorage.get(request.getHeader("token: ")).getUuid();
-        User contact = cassandraUser.get(params.getUuid(), asList("uuid"));
+        String contactUUID = request.getHeader("uuid: ");
+        User contact = cassandraUser.get(contactUUID, asList("uuid"));
         if (contact == null) {
             return new Response(Response.NOT_FOUND, gson.toJson(ErrorResponse.notFound(uuid)).getBytes());
         }
@@ -68,5 +64,9 @@ public class ContactHandler extends RESTHandler {
         } else {
             return new Response(Response.INTERNAL_ERROR, new Gson().toJson(ErrorResponse.unknown()).getBytes());
         }
+    }
+
+    private void contactLeaveChatBroadcast() {
+
     }
 }

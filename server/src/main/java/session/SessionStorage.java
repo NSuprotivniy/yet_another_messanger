@@ -35,4 +35,8 @@ public class SessionStorage {
     public void set(Session session) throws IOException {
         memcached.set(KEY_PREFIX + session.getUuid(), new Gson().toJson(session));
     }
+
+    public void delete(String token) {
+        memcached.delete(token);
+    }
 }

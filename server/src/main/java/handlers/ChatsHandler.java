@@ -2,14 +2,12 @@ package handlers;
 
 import com.google.gson.Gson;
 import dao.database.CassandraChat;
-import handlers.RESTHandler;
 import models.Chat;
 import one.nio.http.Request;
 import one.nio.http.Response;
 import session.LogonException;
 import session.SessionStorage;
 import wrappers.chat.ChatErrorResponse;
-import wrappers.chat.ChatGetAllRequest;
 import wrappers.chat.ChatGetAllResponseSuccess;
 
 import java.util.List;
@@ -24,10 +22,10 @@ public class ChatsHandler extends RESTHandler {
     @Override
     protected Response get(Request request) throws LogonException {
         Gson gson = new Gson();
-        String creatorUUID = sessionStorage.get(request.getHeader("token: ")).getUuid();
-        List<Chat> chats = cassandraChat.search(new Chat().setCreatorUUID(creatorUUID), asList("creator_uuid"), asList("uuid", "name"));
+        String participantUUID = sessionStorage.get(request.getHeader("token: ")).getUuid();
+        List<Chat> chats = cassandraChat.getByParticipantUUIDs(asList(participantUUID), asList("uuid", "name"));
         if (chats == null || chats.size() == 0) {
-            return new Response(Response.NOT_FOUND, gson.toJson(ChatErrorResponse.notFound(creatorUUID)).getBytes());
+            return new Response(Response.NOT_FOUND, gson.toJson(ChatErrorResponse.notFound("chat")).getBytes());
         }
         String[] uuids = chats.stream().map(Chat::getUuid).map(UUID::toString).toArray(String[]::new);
         String[] names = chats.stream().map(Chat::getName).toArray(String[]::new);

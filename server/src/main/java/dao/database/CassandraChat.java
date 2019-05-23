@@ -42,6 +42,7 @@ public class CassandraChat {
                 .value("participants_uuids", literal(chat.getParticipantsUUIDs()))
                 .value("creator_uuid", literal(chat.getCreatorUUID()));
         session.execute(insert.build());
+        chat.setUuid(uuid);
         return uuid.toString();
     }
 
@@ -87,6 +88,30 @@ public class CassandraChat {
             }
             return Relation.column(field).isEqualTo(literal(value));
         }).collect(Collectors.toList());
+        Select select = selectFrom("chats")
+                .columns(fields)
+                .where(relations)
+                .allowFiltering();
+        ResultSet result = session.execute(select.build());
+        List<Chat> chats = new ArrayList<Chat>();
+        for (Row row : result) {
+            Chat newChat = new Chat();
+            for (String field : fields) {
+                switch (field) {
+                    case "uuid": newChat.setUuid(row.getUuid("uuid").toString()); break;
+                    case "name": newChat.setName(row.getString("name")); break;
+                    case "participants_uuids": newChat.setParticipantsUUIDs(row.getSet("participants_uuids", UUID.class)); break;
+                    case "creator_uuid": newChat.setCreatorUUID(row.getString("creator_uuid")); break;
+                }
+            }
+            chats.add(newChat);
+        }
+
+        return chats;
+    }
+
+    public List<Chat> getByParticipantUUIDs(List<String> participantUUIDs, List<String> fields) {
+        List<Relation> relations = participantUUIDs.stream().map(uuid -> Relation.column("participants_uuids").contains(literal(uuid))).collect(Collectors.toList());
         Select select = selectFrom("chats")
                 .columns(fields)
                 .where(relations)

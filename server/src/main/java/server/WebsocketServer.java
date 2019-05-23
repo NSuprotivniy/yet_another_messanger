@@ -1,12 +1,9 @@
 package server;
 
 
-import handlers.websocket.MessageHandler;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
-import session.LogonException;
-import session.Session;
 import session.SessionStorage;
 
 import java.util.HashMap;

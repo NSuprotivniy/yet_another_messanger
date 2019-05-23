@@ -16,4 +16,6 @@ public class ErrorResponse {
     public static ResponseErrorWrapper unknown() {
         return new ResponseErrorWrapper("Unknown Error");
     }
+
+    public static ResponseErrorWrapper permissionDenied() { return new ResponseErrorWrapper("Permission denied"); }
 }

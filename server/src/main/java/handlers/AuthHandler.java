@@ -9,6 +9,7 @@ import one.nio.http.Response;
 import org.mindrot.jbcrypt.BCrypt;
 import session.Session;
 import session.SessionStorage;
+import wrappers.EmptyResponse;
 import wrappers.auth.AuthCreateRequest;
 import wrappers.auth.AuthCreateResponseSuccess;
 import wrappers.auth.AuthErrorResponse;
@@ -66,6 +67,7 @@ public class AuthHandler extends RESTHandler {
 
     @Override
     protected Response delete(Request request) {
-        return null;
+        sessionStorage.delete(request.getHeader("token: "));
+        return Response.ok(new Gson().toJson(new EmptyResponse()));
     }
 }
