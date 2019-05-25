@@ -2,6 +2,7 @@ package models;
 
 import wrappers.message.MessageCreateRequest;
 
+import java.time.LocalTime;
 import java.util.UUID;
 
 public class Message {
@@ -9,6 +10,7 @@ public class Message {
     private String text;
     private UUID chatUUID;
     private UUID creatorUUID;
+    private long createdAt;
 
     public Message() {}
     public Message(String text, String chatUUID, String creatorUUID) {
@@ -64,6 +66,15 @@ public class Message {
 
     public Message setUuid(UUID uuid) {
         this.uuid = uuid;
+        return this;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public Message setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
         return this;
     }
 }

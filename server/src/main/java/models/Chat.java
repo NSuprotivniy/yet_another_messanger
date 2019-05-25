@@ -2,8 +2,8 @@ package models;
 
 import wrappers.chat.ChatCreateRequest.ChatCreateParams;
 
+import java.time.LocalTime;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -13,6 +13,7 @@ public class Chat implements Model {
     private String name;
     private Set<UUID> participantsUUIDs;
     private UUID creatorUUID;
+    private long createdAt;
 
     public Chat() {}
 
@@ -66,8 +67,22 @@ public class Chat implements Model {
         return creatorUUID;
     }
 
+    public Chat setCreatorUUID(UUID creatorUUID) {
+        this.creatorUUID = creatorUUID;
+        return this;
+    }
+
     public Chat setCreatorUUID(String creatorUUID) {
         this.creatorUUID = UUID.fromString(creatorUUID);
+        return this;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public Chat setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
         return this;
     }
 }

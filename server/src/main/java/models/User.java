@@ -3,6 +3,7 @@ package models;
 import org.mindrot.jbcrypt.BCrypt;
 import wrappers.user.UserCreateRequest.UserCreateParams;
 
+import java.time.LocalTime;
 import java.util.UUID;
 
 public class User implements Model {
@@ -11,6 +12,7 @@ public class User implements Model {
     private String email;
     private String passwordDigest;
     private String salt;
+    private long createdAt;
 
     public User() {}
 
@@ -87,6 +89,15 @@ public class User implements Model {
 
     public User setUuid(String uuid) {
         this.uuid = UUID.fromString(uuid);
+        return this;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public User setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
         return this;
     }
 }

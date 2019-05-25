@@ -3,6 +3,7 @@ package dao.database;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
+import com.datastax.oss.driver.api.core.metadata.schema.ClusteringOrder;
 import com.datastax.oss.driver.api.core.uuid.Uuids;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
 import com.datastax.oss.driver.api.querybuilder.delete.Delete;
@@ -13,6 +14,7 @@ import com.datastax.oss.driver.api.querybuilder.update.Assignment;
 import com.datastax.oss.driver.api.querybuilder.update.Update;
 import models.Message;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -39,7 +41,8 @@ public class CassandraMessage {
                 .value("uuid", literal(uuid))
                 .value("text", literal(message.getText()))
                 .value("creator_uuid", literal(message.getCreatorUUID()))
-                .value("chat_uuid", literal(message.getChatUUID()));
+                .value("chat_uuid", literal(message.getChatUUID()))
+                .value("created_at", literal(System.currentTimeMillis()));
         session.execute(insert.build());
         message.setUuid(uuid);
         return uuid.toString();
@@ -73,6 +76,7 @@ public class CassandraMessage {
                 case "text": message.setText(row.getString("text")); break;
                 case "creator_uuid": message.setCreatorUUID(row.getUuid("creator_uuid")); break;
                 case "chat_uuid": message.setChatUUID(row.getUuid("chat_uuid")); break;
+                case "created_at": message.setCreatedAt(row.getInstant("created_at").toEpochMilli()); break;
             }
         }
         return message;
@@ -101,6 +105,7 @@ public class CassandraMessage {
                     case "text": newMessage.setText(row.getString("text")); break;
                     case "chat_uuid": newMessage.setChatUUID(row.getUuid("chat_uuid")); break;
                     case "creator_uuid": newMessage.setCreatorUUID(row.getUuid("creator_uuid")); break;
+                    case "created_at": newMessage.setCreatedAt(row.getInstant("created_at").toEpochMilli()); break;
                 }
             }
             messages.add(newMessage);

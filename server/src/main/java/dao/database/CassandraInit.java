@@ -34,7 +34,8 @@ public class CassandraInit {
                             .withColumn("email", DataTypes.TEXT)
                             .withColumn("password_digest", DataTypes.TEXT)
                             .withColumn("salt", DataTypes.TEXT)
-                            .withColumn("contacts_uuids", DataTypes.setOf(DataTypes.UUID));
+                            .withColumn("contacts_uuids", DataTypes.setOf(DataTypes.UUID))
+                            .withColumn("created_at", DataTypes.TIMESTAMP);
 
             session.execute(createTable.build());
 
@@ -43,7 +44,8 @@ public class CassandraInit {
                             .withPartitionKey("uuid", DataTypes.UUID)
                             .withColumn("name", DataTypes.TEXT)
                             .withColumn("participants_uuids", DataTypes.setOf(DataTypes.UUID))
-                            .withColumn("creator_uuid", DataTypes.UUID);
+                            .withColumn("creator_uuid", DataTypes.UUID)
+                            .withColumn("created_at", DataTypes.TIMESTAMP);
 
             session.execute(createTable.build());
 
@@ -53,13 +55,26 @@ public class CassandraInit {
                             .withPartitionKey("uuid", DataTypes.UUID)
                             .withColumn("text", DataTypes.TEXT)
                             .withColumn("creator_uuid", DataTypes.UUID)
-                            .withColumn("chat_uuid", DataTypes.UUID);
+                            .withColumn("chat_uuid", DataTypes.UUID)
+                            .withColumn("created_at", DataTypes.TIMESTAMP);
+            session.execute(createTable.build());
+
+            createTable =
+                    createTable("files").ifNotExists()
+                            .withPartitionKey("uuid", DataTypes.UUID)
+                            .withColumn("name", DataTypes.TEXT)
+                            .withColumn("body", DataTypes.TEXT)
+                            .withColumn("creator_uuid", DataTypes.UUID)
+                            .withColumn("chat_uuid", DataTypes.UUID)
+                            .withColumn("created_at", DataTypes.TIMESTAMP);
             session.execute(createTable.build());
 
             createIndex().ifNotExists().onTable("chats").andColumnKeys("creator");
             createIndex().ifNotExists().onTable("chats").andColumnKeys("participants");
-            createIndex().ifNotExists().onTable("messages").andColumnKeys("user_uuid");
+            createIndex().ifNotExists().onTable("messages").andColumnKeys("creator_uuid");
             createIndex().ifNotExists().onTable("messages").andColumnKeys("chat_uuid");
+            createIndex().ifNotExists().onTable("files").andColumnKeys("creator_uuid");
+            createIndex().ifNotExists().onTable("files").andColumnKeys("chat_uuid");
         }
     }
 

@@ -13,6 +13,7 @@ import com.datastax.oss.driver.api.querybuilder.update.Assignment;
 import com.datastax.oss.driver.api.querybuilder.update.Update;
 import models.User;
 
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,7 +37,8 @@ public class CassandraUser {
                 .value("name", literal(user.getName()))
                 .value("email", literal(user.getEmail()))
                 .value("password_digest", literal(user.getPasswordDigest()))
-                .value("salt", literal(user.getSalt()));
+                .value("salt", literal(user.getSalt()))
+                .value("created_at", literal(System.currentTimeMillis()));
         session.execute(insert.build());
         return uuid.toString();
     }
@@ -75,6 +77,7 @@ public class CassandraUser {
                 case "email": user.setEmail(row.getString("email")); break;
                 case "password_digest": user.setPasswordDigest(row.getString("password_digest")); break;
                 case "salt": user.setSalt(row.getString("salt")); break;
+                case "created_at": user.setCreatedAt(row.getInstant("created_at").toEpochMilli()); break;
             }
         }
         return user;
@@ -107,6 +110,7 @@ public class CassandraUser {
                 case "email": user.setEmail(row.getString("email")); break;
                 case "password_digest": user.setPasswordDigest(row.getString("password_digest")); break;
                 case "salt": user.setSalt(row.getString("salt")); break;
+                case "created_at": user.setCreatedAt(row.getInstant("created_at").toEpochMilli()); break;
             }
         }
         return user;

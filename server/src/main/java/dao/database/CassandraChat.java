@@ -3,6 +3,7 @@ package dao.database;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
+import com.datastax.oss.driver.api.core.metadata.schema.ClusteringOrder;
 import com.datastax.oss.driver.api.core.uuid.Uuids;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
 import com.datastax.oss.driver.api.querybuilder.delete.Delete;
@@ -13,6 +14,7 @@ import com.datastax.oss.driver.api.querybuilder.update.Assignment;
 import com.datastax.oss.driver.api.querybuilder.update.Update;
 import models.Chat;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -20,7 +22,6 @@ import java.util.stream.Collectors;
 
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.*;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.literal;
-import static java.util.Arrays.asList;
 
 public class CassandraChat {
     private static final CassandraChat INSTANCE = new CassandraChat();
@@ -40,7 +41,8 @@ public class CassandraChat {
                 .value("uuid", literal(uuid))
                 .value("name", literal(chat.getName()))
                 .value("participants_uuids", literal(chat.getParticipantsUUIDs()))
-                .value("creator_uuid", literal(chat.getCreatorUUID()));
+                .value("creator_uuid", literal(chat.getCreatorUUID()))
+                .value("created_at", literal(System.currentTimeMillis()));
         session.execute(insert.build());
         chat.setUuid(uuid);
         return uuid.toString();
@@ -74,6 +76,7 @@ public class CassandraChat {
                 case "name": chat.setName(row.getString("name")); break;
                 case "participants_uuids": chat.setParticipantsUUIDs(row.getSet("participants_uuids", UUID.class)); break;
                 case "creator": chat.setName(row.getString("creator_uuid")); break;
+                case "created_at": chat.setCreatedAt(row.getInstant("created_at").toEpochMilli()); break;
             }
         }
         return chat;
@@ -101,7 +104,8 @@ public class CassandraChat {
                     case "uuid": newChat.setUuid(row.getUuid("uuid").toString()); break;
                     case "name": newChat.setName(row.getString("name")); break;
                     case "participants_uuids": newChat.setParticipantsUUIDs(row.getSet("participants_uuids", UUID.class)); break;
-                    case "creator_uuid": newChat.setCreatorUUID(row.getString("creator_uuid")); break;
+                    case "creator_uuid": newChat.setCreatorUUID(row.getUuid("creator_uuid")); break;
+                    case "created_at": newChat.setCreatedAt(row.getInstant("created_at").toEpochMilli()); break;
                 }
             }
             chats.add(newChat);
@@ -111,7 +115,7 @@ public class CassandraChat {
     }
 
     public List<Chat> getByParticipantUUIDs(List<String> participantUUIDs, List<String> fields) {
-        List<Relation> relations = participantUUIDs.stream().map(uuid -> Relation.column("participants_uuids").contains(literal(uuid))).collect(Collectors.toList());
+        List<Relation> relations = participantUUIDs.stream().map(UUID::fromString).map(uuid -> Relation.column("participants_uuids").contains(literal(uuid))).collect(Collectors.toList());
         Select select = selectFrom("chats")
                 .columns(fields)
                 .where(relations)
@@ -126,6 +130,7 @@ public class CassandraChat {
                     case "name": newChat.setName(row.getString("name")); break;
                     case "participants_uuids": newChat.setParticipantsUUIDs(row.getSet("participants_uuids", UUID.class)); break;
                     case "creator_uuid": newChat.setCreatorUUID(row.getString("creator_uuid")); break;
+                    case "created_at": newChat.setCreatedAt(row.getInstant("created_at").toEpochMilli()); break;
                 }
             }
             chats.add(newChat);

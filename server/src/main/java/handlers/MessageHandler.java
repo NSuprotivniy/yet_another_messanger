@@ -37,7 +37,7 @@ public class MessageHandler extends RESTHandler {
         if (message == null) {
             return new Response(Response.NOT_FOUND, gson.toJson(MessageErrorResponse.notFound(uuid)).getBytes());
         }
-        MessageGetResponseSuccess responseSuccess = new MessageGetResponseSuccess(message.getText());
+        MessageGetResponseSuccess responseSuccess = new MessageGetResponseSuccess(message);
         return Response.ok(gson.toJson(responseSuccess));
     }
 

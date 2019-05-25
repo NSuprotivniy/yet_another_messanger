@@ -32,6 +32,20 @@ public class Server extends HttpServer {
         return response;
     }
 
+    @Path("/file")
+    public Response handleFile(Request request, HttpSession session) {
+        FileHandler fileHandler = new FileHandler();
+        Response response = fileHandler.handle(request);
+        return response;
+    }
+
+    @Path("/files")
+    public Response handleFiles(Request request, HttpSession session) {
+        FilesHandler filesHandler = new FilesHandler();
+        Response response = filesHandler.handle(request);
+        return response;
+    }
+
     @Path("/user")
     public Response handleUser(Request request, HttpSession session) {
         UserHandler userHandler = new UserHandler();

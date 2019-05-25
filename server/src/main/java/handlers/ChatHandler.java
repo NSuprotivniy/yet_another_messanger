@@ -2,9 +2,11 @@ package handlers;
 
 import com.google.gson.Gson;
 import dao.database.CassandraChat;
+import dao.database.CassandraFile;
 import dao.database.CassandraMessage;
 import handlers.utils.Utils;
 import models.Chat;
+import models.File;
 import models.Message;
 import one.nio.http.Request;
 import one.nio.http.Response;
@@ -22,6 +24,7 @@ import static java.util.Arrays.asList;
 
 public class ChatHandler extends RESTHandler {
 
+    private final CassandraFile cassandraFile = CassandraFile.getInstance();
     private final CassandraMessage cassandraMessage = CassandraMessage.getInstance();
     private final CassandraChat cassandraChat = CassandraChat.getInstance();
     private final SessionStorage sessionStorage = SessionStorage.getInstance();
@@ -34,7 +37,7 @@ public class ChatHandler extends RESTHandler {
         if (Utils.fieldIsBlank(uuid)) {
             return new Response(Response.BAD_REQUEST, gson.toJson(ChatErrorResponse.invalidFieldFormat("uuid")).getBytes());
         }
-        Chat chat = cassandraChat.get(uuid, asList("uuid", "name", "participants_uuids"));
+        Chat chat = cassandraChat.get(uuid, asList("uuid", "name", "participants_uuids", "created_at"));
         if (chat == null) {
             return new Response(Response.NOT_FOUND, gson.toJson(ChatErrorResponse.notFound(uuid)).getBytes());
         }
@@ -43,8 +46,10 @@ public class ChatHandler extends RESTHandler {
             return new Response(Response.BAD_REQUEST, gson.toJson(ChatErrorResponse.permissionDenied()).getBytes());
         }
         List<Message> messages = cassandraMessage.search(new Message().setChatUUID(chat.getUuid()), asList("chat_uuid"), asList("uuid"));
+        List<File> files = cassandraFile.search(new File().setChatUUID(chat.getUuid()), asList("chat_uuid"), asList("uuid"));
         String[] messagesUUIDs = messages.stream().map(Message::getUuid).map(UUID::toString).toArray(String[]::new);
-        ChatGetResponseSuccess responseSuccess = new ChatGetResponseSuccess(chat.getName(), messagesUUIDs);
+        String[] filesUUIDs = files.stream().map(File::getUuid).map(UUID::toString).toArray(String[]::new);
+        ChatGetResponseSuccess responseSuccess = new ChatGetResponseSuccess(chat.getName(), messagesUUIDs, filesUUIDs, chat.getCreatedAt());
         return Response.ok(gson.toJson(responseSuccess));
     }
 
@@ -91,7 +96,7 @@ public class ChatHandler extends RESTHandler {
             return new Response(Response.BAD_REQUEST, gson.toJson(ChatErrorResponse.permissionDenied()).getBytes());
         }
         chat.setName(params.getName());
-        cassandraChat.update(chat, asList("text"));
+        cassandraChat.update(chat, asList("name"));
         return Response.ok(gson.toJson(new ChatUpdateResponseSuccess(params.getUuid())));
     }
 
