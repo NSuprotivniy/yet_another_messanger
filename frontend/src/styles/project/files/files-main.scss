@@ -1,0 +1,13 @@
+.files-page {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0.33s, opacity 0.33s linear;
+}
+
+.files-page.__hidden {
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+}
+

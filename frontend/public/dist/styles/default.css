@@ -70,8 +70,10 @@ body {
 
 .main-wrapper {
   max-width: 592px;
-  min-width: 212px;
+  min-width: 400px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: row;
 }
 
 .action {
@@ -195,5 +197,368 @@ input.action_target {
   padding-bottom: 1px;
   padding-left: 7px;
   padding-right: 7px;
+}
+
+.chats-list-page {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0.33s, opacity 0.33s linear;
+}
+
+.chats-list-page.__hidden {
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.chat-add {
+  height: 64px;
+}
+
+.chat-add:before,
+.chat-add:after {
+  content: '';
+  display: table;
+}
+
+.chat-add:after {
+  clear: both;
+}
+
+.chats-main.__has-chats {
+  visibility: visible;
+  opacity: 1;
+}
+
+.chat-add_input-w {
+  overflow: hidden;
+}
+
+.chat-add_input {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 24px;
+  height: 64px;
+  padding: 16px;
+  border: 0;
+  outline: 0;
+  font-weight: 300;
+  color: #666;
+}
+
+.chat-add_input::-webkit-input-placeholder {
+  color: #ccc;
+  font-style: italic;
+}
+
+.chat-add_input:-moz-placeholder {
+  color: #ccc;
+  font-style: italic;
+}
+
+.chat-add_input::-moz-placeholder {
+  color: #ccc;
+  font-style: italic;
+}
+
+.chat-add_input:-ms-input-placeholder {
+  color: #ccc;
+  font-style: italic;
+}
+
+.chats-list-item {
+  padding: 12px;
+  border-bottom: 1px solid #e6e6e6;
+  background: #fff;
+  display: flex;
+}
+
+.chats-list-item:before,
+.chats-list-item:after {
+  content: '';
+  display: table;
+}
+
+.chats-list-item:after {
+  clear: both;
+}
+
+.hover .chats-list-item .chats-item_remove-action {
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.hover .chats-list-item:hover {
+  background: #fafafa;
+}
+
+.hover .chats-list-item:hover .chats-item_remove-action {
+  opacity: 1;
+}
+
+.chats-list-item.__hide {
+  display: none;
+}
+
+.chats-list-item:first-child,
+.chats-list-item.__hide:first-child ~ .chats-item {
+  border-top: 1px solid #e6e6e6;
+}
+
+.chats-list-item.__hide:first-child ~ .chats-list-item:not(.__hide) ~ .chats-list-item {
+  border-top: 0;
+}
+
+.chats-list-item_remove-action {
+  float: right;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  order: 1;
+  align-self: flex-end;
+}
+
+.chats-list-item_remove-action .action_visual {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.chats-list-item_remove-action .action_visual:before,
+.chats-list-item_remove-action .action_visual:after {
+  content: '';
+  position: absolute;
+  width: 21px;
+  height: 2px;
+  background: #ebdfdf;
+  transform-origin: 0 0;
+}
+
+.chats-list-item_remove-action .action_visual:before {
+  transform: rotate(45deg);
+  left: 1px;
+}
+
+.chats-list-item_remove-action .action_visual:after {
+  transform: rotate(-45deg);
+  top: 15px;
+}
+
+.chats-list-item_name-w {
+  overflow: hidden;
+  flex: 1 0;
+}
+
+.chats-list-item_name {
+  outline: none;
+  border: 0;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 24px;
+  line-height: 28px;
+  font-weight: 300;
+  padding: 4px 12px;
+  overflow: hidden;
+}
+
+.files-page {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0.33s, opacity 0.33s linear;
+}
+
+.files-page.__hidden {
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.contacts-page {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0.33s, opacity 0.33s linear;
+}
+
+.contacts-page.__hidden {
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.contact-add {
+  height: 64px;
+}
+
+.contact-add:before,
+.contact-add:after {
+  content: '';
+  display: table;
+}
+
+.contact-add:after {
+  clear: both;
+}
+
+.contacts-main.__has-contacts {
+  visibility: visible;
+  opacity: 1;
+}
+
+.contact-add_input-w {
+  overflow: hidden;
+}
+
+.contact-add_input {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 24px;
+  height: 64px;
+  padding: 16px;
+  border: 0;
+  outline: 0;
+  font-weight: 300;
+  color: #666;
+}
+
+.contact-add_input::-webkit-input-placeholder {
+  color: #ccc;
+  font-style: italic;
+}
+
+.contact-add_input:-moz-placeholder {
+  color: #ccc;
+  font-style: italic;
+}
+
+.contact-add_input::-moz-placeholder {
+  color: #ccc;
+  font-style: italic;
+}
+
+.contact-add_input:-ms-input-placeholder {
+  color: #ccc;
+  font-style: italic;
+}
+
+.contact-list-item {
+  padding: 12px;
+  border-bottom: 1px solid #e6e6e6;
+  background: #fff;
+  display: flex;
+}
+
+.contact-list-item:before,
+.contact-list-item:after {
+  content: '';
+  display: table;
+}
+
+.contact-list-item:after {
+  clear: both;
+}
+
+.hover .contact-list-item .contact-item_remove-action {
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.hover .contact-list-item:hover {
+  background: #fafafa;
+}
+
+.hover .contact-list-item:hover .contact-item_remove-action {
+  opacity: 1;
+}
+
+.contact-list-item.__hide {
+  display: none;
+}
+
+.contact-list-item:first-child,
+.contact-list-item.__hide:first-child ~ .contact-item {
+  border-top: 1px solid #e6e6e6;
+}
+
+.contact-list-item.__hide:first-child ~ .contact-list-item:not(.__hide) ~ .contact-list-item {
+  border-top: 0;
+}
+
+.contact-list-item_remove-action {
+  float: right;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  order: 1;
+  align-self: flex-end;
+}
+
+.contact-list-item_remove-action .action_visual {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-list-item_remove-action .action_visual:before,
+.contact-list-item_remove-action .action_visual:after {
+  content: '';
+  position: absolute;
+  width: 21px;
+  height: 2px;
+  background: #ebdfdf;
+  transform-origin: 0 0;
+}
+
+.contact-list-item_remove-action .action_visual:before {
+  transform: rotate(45deg);
+  left: 1px;
+}
+
+.contact-list-item_remove-action .action_visual:after {
+  transform: rotate(-45deg);
+  top: 15px;
+}
+
+.contact-list-item_name-w {
+  overflow: hidden;
+  flex: 1 0;
+}
+
+.contact-list-item_name {
+  outline: none;
+  border: 0;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 24px;
+  line-height: 28px;
+  font-weight: 300;
+  padding: 4px 12px;
+  overflow: hidden;
+}
+
+.sidebar {
+  overflow-x: hidden;
+  width: 50px;
+  margin: auto, 8px;
+}
+
+.sidebar-list {
+  text-align: center;
+}
+
+.sidebar-list_chats,
+.sidebar-list_contacts,
+.sidebar-list_files {
+  font-size: 24px;
+  margin: 8px;
+  color: #666;
+}
+
+.sidebar-list_chats.__active,
+.sidebar-list_contacts.__active,
+.sidebar-list_files.__active {
+  color: #7fff90;
 }
 /*# sourceMappingURL=default.css.map */

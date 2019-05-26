@@ -8,4 +8,6 @@ body {
     max-width: $main-wrapper-width;
     min-width: $main-wrapper-min-width;
     margin: 0 auto;
+    display: flex;
+    flex-direction: row;
     }

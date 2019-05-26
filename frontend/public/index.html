@@ -2,13 +2,97 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
     <link rel="stylesheet" type="text/css" href="./dist/styles/default.css" />
-    <title>Todos</title>
+    <title>Yet another messanger</title>
     <script src="dist/scripts/bundle.js"></script>
 </head>
+
+<script type="text/html" id="chatsListItem">
+    <div class="chats-list-item">
+        <div class="action chats-list-item_remove-action">
+            <div class="action_visual"></div>
+            <button class="action_target js-chats-list-item_remove-action" aria-label="Удалить чат"></button>
+        </div>
+
+        <div class="chats-list-item_name-w">
+            <div class="chats-list-item_name js-chats-list-item_name" contenteditable="true"></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="contactListItem">
+    <div class="contact-list-item">
+        <div class="action contact-list-item_remove-action">
+            <div class="action_visual"></div>
+            <button class="action_target js-contact-list-item_remove-action" aria-label="Удалить чат"></button>
+        </div>
+
+        <div class="contact-list-item_name-w">
+            <div class="contact-list-item_name js-contact-list-item_name" contenteditable="true"></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="chatAddContactListItem">
+    <div class="contact-list-item">
+        <div class="action contact-list-item_remove-action">
+            <div class="action_visual"></div>
+            <button class="action_target js-contact-list-item_remove-action" aria-label="Удалить чат"></button>
+        </div>
+
+        <div class="contact-list-item_name-w">
+            <div class="contact-list-item_name js-contact-list-item_name" contenteditable="true"></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="message">
+    <div class="message">
+        <div class="message_text-w">
+            <div class="chat-item_name js-chat-item_name" contenteditable="true"></div>
+        </div>
+    </div>
+</script>
+
+
 <body class="hover">
 
 <div class="main-wrapper">
+    <div class="sidebar js-sidebar">
+        <ul class="sidebar-list">
+            <li class="far fa-comment sidebar-list_chats js-sidebar-list_chats __active"></li>
+            <li class="far fa-address-book sidebar-list_contacts js-sidebar-list_contacts"></li>
+            <li class="far fa-file-alt sidebar-list_files js-sidebar-list_files"></li>
+        </ul>
+    </div>
+
+    <div class="chats-list-page js-chats-list-page">
+        <div class="chat-add">
+            <div class="chat-add_input-w">
+                <input class="chat-add_input js-chats-chat-input" placeholder="Добавить" aria-label="Поле добавления чата" />
+            </div>
+        </div>
+        <div class="chat-add-contact-list js-chat-add-contact-list __hidden"></div>
+        <div class="chats-list js-chats-list"></div>
+    </div>
+
+    <div class="contacts-page js-contacts-page __hidden">
+        <div class="contact-add">
+            <div class="contact-add_input-w">
+                <input class="contact-add_input js-contact-add-input" placeholder="Добавить контакт" aria-label="Поле добавления контакта" />
+            </div>
+        </div>
+        <div class="contact-list js-contact-list"></div>
+    </div>
+
+    <div class="files-page js-files-page __hidden">
+
+    </div>
+
+    <div class="chat-page js-chat-page __hidden">
+
+    </div>
 </div>
 
 </body>

@@ -7,3 +7,15 @@
 @import "base/action/action";
 @import "base/input-checkbox/input-checkbox";
 @import "base/filter/filter";
+
+@import "project/chats/chats-main";
+@import "project/chats/add-chat";
+@import "project/chats/chats-item";
+
+@import "project/files/files-main";
+
+@import "project/contacts/contacts-main";
+@import "project/contacts/add-contact";
+@import "project/contacts/contacts-item";
+
+@import "project/sidebar/sidebar";
