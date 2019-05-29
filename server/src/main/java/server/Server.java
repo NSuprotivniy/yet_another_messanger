@@ -2,6 +2,7 @@ package server;
 
 import handlers.*;
 import one.nio.http.*;
+import one.nio.server.AcceptorConfig;
 import one.nio.util.Utf8;
 
 import java.io.IOException;
@@ -22,6 +23,13 @@ public class Server extends HttpServer {
     public Response handleChat(Request request, HttpSession session) {
         ChatHandler chatHandler = new ChatHandler();
         Response response = chatHandler.handle(request);
+        return response;
+    }
+
+    @Path("/chat/participant")
+    public Response handleChatParticipant(Request request, HttpSession session) {
+        ChatParticipantHandler chatParticipantHandler = new ChatParticipantHandler();
+        Response response = chatParticipantHandler.handle(request);
         return response;
     }
 
@@ -86,7 +94,11 @@ public class Server extends HttpServer {
         if (args.length > 0) {
             config = HttpServerConfigFactory.fromFile(args[0]);
         } else {
-            config = HttpServerConfigFactory.create(9090);
+            AcceptorConfig ac = new AcceptorConfig();
+            ac.port = 9090;
+
+            config = new HttpServerConfig();
+            config.acceptors = new AcceptorConfig[]{ac};
         }
 
         Server server = new Server(config);

@@ -13,6 +13,7 @@ import com.datastax.oss.driver.api.querybuilder.select.Select;
 import com.datastax.oss.driver.api.querybuilder.update.Assignment;
 import com.datastax.oss.driver.api.querybuilder.update.Update;
 import models.Chat;
+import models.User;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -75,7 +76,7 @@ public class CassandraChat {
             switch (field) {
                 case "name": chat.setName(row.getString("name")); break;
                 case "participants_uuids": chat.setParticipantsUUIDs(row.getSet("participants_uuids", UUID.class)); break;
-                case "creator": chat.setName(row.getString("creator_uuid")); break;
+                case "creator_uuid": chat.setCreatorUUID(row.getUuid("creator_uuid")); break;
                 case "created_at": chat.setCreatedAt(row.getInstant("created_at").toEpochMilli()); break;
             }
         }
@@ -142,5 +143,21 @@ public class CassandraChat {
     public void delete(String uuid) {
         Delete deleteChat = deleteFrom("chats").whereColumn("uuid").isEqualTo(literal(UUID.fromString(uuid)));
         session.execute(deleteChat.build());
+    }
+
+    public boolean addParticipant(UUID uuid, UUID participantUUID) {
+        Update update = QueryBuilder.update("chats")
+                .appendSetElement("participants_uuids", literal(participantUUID))
+                .whereColumn("uuid").isEqualTo(literal(uuid));
+        ResultSet result = session.execute(update.build());
+        return result.wasApplied();
+    }
+
+    public boolean removeParticipant(UUID uuid, UUID participantUUID) {
+        Update update = QueryBuilder.update("chats")
+                .removeSetElement("participants_uuids", literal(participantUUID))
+                .whereColumn("uuid").isEqualTo(literal(uuid));
+        ResultSet result = session.execute(update.build());
+        return result.wasApplied();
     }
 }

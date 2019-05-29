@@ -65,8 +65,4 @@ public class ContactHandler extends RESTHandler {
             return new Response(Response.INTERNAL_ERROR, new Gson().toJson(ErrorResponse.unknown()).getBytes());
         }
     }
-
-    private void contactLeaveChatBroadcast() {
-
-    }
 }

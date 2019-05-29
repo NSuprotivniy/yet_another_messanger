@@ -102,24 +102,7 @@ public class ChatHandler extends RESTHandler {
 
     @Override
     protected Response delete(Request request) throws LogonException {
-        String body = new String(request.getBody());
-        Gson gson = new Gson();
-        ChatDeleteRequest jsonRpcRequest = gson.fromJson(body, ChatDeleteRequest.class);
-        ChatDeleteRequest.ChatDeleteRequestParams params = jsonRpcRequest.getParams();
-        if (params.getUuid() == null)  {
-            return new Response(Response.BAD_REQUEST, gson.toJson(ChatErrorResponse.invalidFieldFormat("uuid")).getBytes());
-        }
-        Chat chat = cassandraChat.get(params.getUuid(), asList("uuid", "participants_uuids"));
-        if (chat == null) {
-            return new Response(Response.NOT_FOUND, gson.toJson(ChatErrorResponse.notFound(params.getUuid())).getBytes());
-        }
-        String userUUID = sessionStorage.get(request.getHeader("token: ")).getUuid();
-        if (chat.getCreatorUUID().equals(UUID.fromString(userUUID)) == false) {
-            return new Response(Response.BAD_REQUEST, gson.toJson(ChatErrorResponse.permissionDenied()).getBytes());
-        }
-        cassandraChat.delete(params.getUuid());
-        broadcastChatDelete(chat);
-        return Response.ok(gson.toJson(new ChatDeleteResponseSuccess(params.getUuid())));
+        return null;
     }
 
     public void broadcastChatCreate(Chat chat) {
@@ -127,13 +110,6 @@ public class ChatHandler extends RESTHandler {
                 chat.getUuid().toString(),
                 chat.getName(),
                 chat.getParticipantsUUIDs().stream().map(UUID::toString).toArray(String[]::new)));
-        for (UUID participantsUUID : chat.getParticipantsUUIDs()) {
-            websocketServer.sendMessage(participantsUUID.toString(), body );
-        }
-    }
-
-    public void broadcastChatDelete(Chat chat) {
-        String body = new Gson().toJson(new ChatDeleteBroadcast(chat.getUuid().toString()));
         for (UUID participantsUUID : chat.getParticipantsUUIDs()) {
             websocketServer.sendMessage(participantsUUID.toString(), body );
         }

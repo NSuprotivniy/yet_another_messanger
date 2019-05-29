@@ -36,15 +36,17 @@ public class CassandraFile {
 
     public String save(File file) {
         UUID uuid = Uuids.timeBased();
+        long createdAt = System.currentTimeMillis();
         Insert insert = insertInto( "files")
                 .value("uuid", literal(uuid))
                 .value("name", literal(file.getName()))
                 .value("body", literal(file.getBody()))
                 .value("creator_uuid", literal(file.getCreatorUUID()))
                 .value("chat_uuid", literal(file.getChatUUID()))
-                .value("created_at", literal(System.currentTimeMillis()));
+                .value("created_at", literal(createdAt));
         session.execute(insert.build());
         file.setUuid(uuid);
+        file.setCreatedAt(createdAt);
         return uuid.toString();
 
     }
@@ -121,30 +123,31 @@ public class CassandraFile {
     }
 
     public List<File> getAll(String userUUID, List<String> fields) {
-        List<Chat> chats = cassandraChat.getByParticipantUUIDs(asList(userUUID), asList("uuid"));
-        List<Term> chatsUUIDs = chats.stream().map(Chat::getUuid).map(uuid -> literal(uuid)).collect(Collectors.toList());
-        Select select = selectFrom("files")
-                .columns(fields)
-                .whereColumn("chat_uuid").in(chatsUUIDs)
-                .allowFiltering();
-        ResultSet result = session.execute(select.build());
-        Set<File> files = new HashSet<>();
-        for (Row row : result) {
-            File newFile = new File();
-            for (String field : fields) {
-                switch (field) {
-                    case "uuid": newFile.setUuid(row.getUuid("uuid").toString()); break;
-                    case "name": newFile.setName(row.getString("name")); break;
-                    case "body": newFile.setBody(row.getString("body")); break;
-                    case "creator_uuid": newFile.setCreatorUUID(row.getUuid("creator_uuid")); break;
-                    case "chat_uuid": newFile.setChatUUID(row.getUuid("chat_uuid")); break;
-                    case "created_at": newFile.setCreatedAt(row.getInstant("created_at").toEpochMilli()); break;
-                }
-            }
-            files.add(newFile);
-        }
-        files.addAll(search(new File().setCreatorUUID(userUUID), asList("creator_uuid"), fields));
-        return new ArrayList<>(files);
+//        List<Chat> chats = cassandraChat.getByParticipantUUIDs(asList(userUUID), asList("uuid"));
+//        List<Term> chatsUUIDs = chats.stream().map(Chat::getUuid).map(uuid -> literal(uuid)).collect(Collectors.toList());
+//        Select select = selectFrom("files")
+//                .columns(fields)
+//                .whereColumn("chat_uuid").in(chatsUUIDs)
+//                .allowFiltering();
+//        ResultSet result = session.execute(select.build());
+//        Set<File> files = new HashSet<>();
+//        for (Row row : result) {
+//            File newFile = new File();
+//            for (String field : fields) {
+//                switch (field) {
+//                    case "uuid": newFile.setUuid(row.getUuid("uuid").toString()); break;
+//                    case "name": newFile.setName(row.getString("name")); break;
+//                    case "body": newFile.setBody(row.getString("body")); break;
+//                    case "creator_uuid": newFile.setCreatorUUID(row.getUuid("creator_uuid")); break;
+//                    case "chat_uuid": newFile.setChatUUID(row.getUuid("chat_uuid")); break;
+//                    case "created_at": newFile.setCreatedAt(row.getInstant("created_at").toEpochMilli()); break;
+//                }
+//            }
+//            files.add(newFile);
+//        }
+//        files.addAll(search(new File().setCreatorUUID(userUUID), asList("creator_uuid"), fields));
+//        return new ArrayList<>(files);
+        return search(new File().setCreatorUUID(userUUID), asList("creator_uuid"), fields);
     }
 
     public void delete(String uuid) {

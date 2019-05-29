@@ -38,6 +38,10 @@ public class WebsocketServer extends AbstractVerticle {
                     clients.remove(sessionStorage.get(ctx.headers().get("token")).getUuid(), ctx.textHandlerID());
                 } catch (Exception e1) { }
             });
+
+            ctx.exceptionHandler((e) -> {
+
+            });
         }).listen(9091);
     }
 

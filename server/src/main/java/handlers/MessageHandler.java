@@ -3,9 +3,11 @@ package handlers;
 import com.google.gson.Gson;
 import dao.database.CassandraChat;
 import dao.database.CassandraMessage;
+import dao.database.CassandraUser;
 import handlers.utils.Utils;
 import models.Chat;
 import models.Message;
+import models.User;
 import one.nio.http.Request;
 import one.nio.http.Response;
 import server.WebsocketServer;
@@ -25,6 +27,7 @@ public class MessageHandler extends RESTHandler {
     private final SessionStorage sessionStorage = SessionStorage.getInstance();
     private final WebsocketServer websocketServer = WebsocketServer.getIstance();
     private final CassandraChat cassandraChat = CassandraChat.getInstance();
+    private final CassandraUser cassandraUser = CassandraUser.getInstance();
 
     @Override
     protected Response get(Request request) {
@@ -33,11 +36,12 @@ public class MessageHandler extends RESTHandler {
         if (Utils.fieldIsBlank(uuid)) {
             return new Response(Response.BAD_REQUEST, gson.toJson(MessageErrorResponse.invalidFieldFormat("uuid")).getBytes());
         }
-        Message message = cassandraMessage.get(uuid, asList("uuid", "text", "chat_uuid", "creator_uuid"));
+        Message message = cassandraMessage.get(uuid, asList("uuid", "text", "chat_uuid", "creator_uuid", "created_at"));
         if (message == null) {
             return new Response(Response.NOT_FOUND, gson.toJson(MessageErrorResponse.notFound(uuid)).getBytes());
         }
-        MessageGetResponseSuccess responseSuccess = new MessageGetResponseSuccess(message);
+        User creator = cassandraUser.get(message.getCreatorUUID(), asList("name"));
+        MessageGetResponseSuccess responseSuccess = new MessageGetResponseSuccess(message, creator);
         return Response.ok(gson.toJson(responseSuccess));
     }
 
@@ -98,12 +102,8 @@ public class MessageHandler extends RESTHandler {
 
     public void broadcastMessage(Message message) {
         Chat chat = cassandraChat.get(message.getChatUUID().toString(), asList("participants_uuids", "name"));
-        MessageCreateBroadcast messageCreateBroadcast = new MessageCreateBroadcast(
-                message.getUuid().toString(),
-                message.getText(),
-                message.getCreatorUUID().toString(),
-                message.getChatUUID().toString(),
-                chat.getName());
+        User creator = cassandraUser.get(message.getCreatorUUID(), asList("uuid", "name"));
+        MessageCreateBroadcast messageCreateBroadcast = new MessageCreateBroadcast(message, chat, creator);
         String body = new Gson().toJson(messageCreateBroadcast);
         for (UUID participantsUUID : chat.getParticipantsUUIDs()) {
             websocketServer.sendMessage(participantsUUID.toString(), body);

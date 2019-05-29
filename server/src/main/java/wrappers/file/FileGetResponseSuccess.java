@@ -1,17 +1,18 @@
 package wrappers.file;
 
 import models.File;
+import models.User;
 import wrappers.JsonRPCRequestWrapper;
 
 public class FileGetResponseSuccess extends JsonRPCRequestWrapper {
     private FileGetResponseSuccessParams params;
 
-    public FileGetResponseSuccess(String name, String body, String creatorUUID, long createdAt) {
-        this.params = new FileGetResponseSuccessParams(name, body, creatorUUID, createdAt);
+    public FileGetResponseSuccess(File file, User creator) {
+        this(file.getName(), file.getBody(), creator.getUuid().toString(), creator.getName(), file.getCreatedAt());
     }
 
-    public FileGetResponseSuccess(File file) {
-        this.params = new FileGetResponseSuccessParams(file.getName(), file.getBody(), file.getCreatorUUID().toString(), file.getCreatedAt());
+    public FileGetResponseSuccess(String name, String body, String creatorUUID, String creatorName, long createdAt) {
+        this.params = new FileGetResponseSuccessParams(name, body, creatorUUID, creatorName, createdAt);
     }
 
     public FileGetResponseSuccessParams getParams() {
@@ -22,12 +23,14 @@ public class FileGetResponseSuccess extends JsonRPCRequestWrapper {
         private String name;
         private String body;
         private String creatorUUID;
+        private String creatorName;
         private long createdAt;
 
-        public FileGetResponseSuccessParams(String name, String body, String creatorUUID, long createdAt) {
+        public FileGetResponseSuccessParams(String name, String body, String creatorUUID, String creatorName, long createdAt) {
             this.name = name;
             this.body = body;
             this.creatorUUID = creatorUUID;
+            this.creatorName = creatorName;
             this.createdAt = createdAt;
         }
     }

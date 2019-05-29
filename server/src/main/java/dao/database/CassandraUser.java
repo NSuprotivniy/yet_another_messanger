@@ -60,10 +60,11 @@ public class CassandraUser {
         session.execute(updateUsers.build());
     }
 
-    public User get(String uuid, List<String> fields) {
+    public User get(String uuid, List<String> fields) { return get(UUID.fromString(uuid), fields); }
+    public User get(UUID uuid, List<String> fields) {
         Select select = selectFrom("users")
                 .columns(fields)
-                .whereColumn("uuid").isEqualTo(literal(UUID.fromString(uuid)))
+                .whereColumn("uuid").isEqualTo(literal(uuid))
                 .allowFiltering();
         ResultSet result = session.execute(select.build());
         Row row =  result.one();

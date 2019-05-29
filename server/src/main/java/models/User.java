@@ -87,6 +87,11 @@ public class User implements Model {
         return this;
     }
 
+    public User setUuid(UUID uuid) {
+        this.uuid = uuid;
+        return this;
+    }
+
     public User setUuid(String uuid) {
         this.uuid = UUID.fromString(uuid);
         return this;

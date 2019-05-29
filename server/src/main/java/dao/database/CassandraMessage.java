@@ -37,14 +37,16 @@ public class CassandraMessage {
 
     public String save(Message message) {
         UUID uuid = Uuids.timeBased();
+        long createdAt = System.currentTimeMillis();
         Insert insert = insertInto( "messages")
                 .value("uuid", literal(uuid))
                 .value("text", literal(message.getText()))
                 .value("creator_uuid", literal(message.getCreatorUUID()))
                 .value("chat_uuid", literal(message.getChatUUID()))
-                .value("created_at", literal(System.currentTimeMillis()));
+                .value("created_at", literal(createdAt));
         session.execute(insert.build());
         message.setUuid(uuid);
+        message.setCreatedAt(createdAt);
         return uuid.toString();
     }
 
