@@ -1,7 +1,7 @@
 var Eventable = require('../modules/Eventable');
 var extendConstructor = require('../utils/extendConstructor');
 
-var ChatsListItem = require('../components/ChatsListItem');
+var ChatListItem = require('../components/ChatListItem');
 
 var CHATS_LIST_SELECTOR = '.js-chats-list';
 var itemsIdIterator = 0;
@@ -10,34 +10,33 @@ var itemsIdIterator = 0;
  * @extends {Eventable}
  * @constructor
  */
-function ChatsListConstructor() {
+function ChatListConstructor() {
     /**
      * @type {Array.<ChatsConstructor>}
      * @private
      */
     this._items = [];
     this._chatsList = document.querySelector(CHATS_LIST_SELECTOR);
-
     this._initEventable();
 }
 
-extendConstructor(ChatsListConstructor, Eventable);
+extendConstructor(ChatListConstructor, Eventable);
 
-var chatsListConstructorPrototype = ChatsListConstructor.prototype;
+var chatListConstructorPrototype = ChatListConstructor.prototype;
 
 /**
  * @return {Number}
  */
-chatsListConstructorPrototype.getItemsCount =function () {
+chatListConstructorPrototype.getItemsCount = function () {
     return this._items.length;
 };
 
 /**
  * @param {Object} chatsItemData
- * @return {ChatsListConstructor}
+ * @return {ChatListConstructor}
  */
-chatsListConstructorPrototype.createItem = function (chatsItemData) {
-    var item = new ChatsListItem(Object.assign(
+chatListConstructorPrototype.createItem = function (chatsItemData) {
+    var item = new ChatListItem(Object.assign(
         {
             id: itemsIdIterator++,
         },
@@ -46,8 +45,11 @@ chatsListConstructorPrototype.createItem = function (chatsItemData) {
 
     this._items.push(item);
 
-    item.on('remove', this._onItemRemove, this)
-        .render(this._chatsList);
+    item
+        .on('remove', this._onItemRemove, this)
+        .on('openChat', this._openChat, this)
+        .render(this._chatsList)
+        .renderChatPage();
 
     this.trigger('itemAdd', item);
 
@@ -57,10 +59,10 @@ chatsListConstructorPrototype.createItem = function (chatsItemData) {
 
 /**
  * @param {Number} itemId
- * @return {ChatsListItem|null}
+ * @return {ChatListItem|null}
  * @private
  */
-chatsListConstructorPrototype._getItemById = function (itemId) {
+chatListConstructorPrototype._getItemById = function (itemId) {
     var items = this._items;
 
     for (var i = items.length; i-- ;) {
@@ -72,7 +74,7 @@ chatsListConstructorPrototype._getItemById = function (itemId) {
     return null;
 };
 
-chatsListConstructorPrototype._onItemRemove = function (itemId) {
+chatListConstructorPrototype._onItemRemove = function (itemId) {
     var chatsItemComponent = this._getItemById(itemId);
 
     if (chatsItemComponent) {
@@ -84,5 +86,9 @@ chatsListConstructorPrototype._onItemRemove = function (itemId) {
     return this;
 };
 
+chatListConstructorPrototype._openChat = function(modelId) {
+    this.trigger('openChat', modelId);
+}
 
-module.exports = ChatsListConstructor;
+
+module.exports = ChatListConstructor;

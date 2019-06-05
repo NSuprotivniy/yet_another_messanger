@@ -1,11 +1,10 @@
 .sidebar {
   overflow-x: hidden;
   width: $sidebar-width;
-  margin: auto, $offset_2x;
+  margin: 0 $offset_8x;
 }
 
 .sidebar-list {
-  text-align: center;
 }
 
 .sidebar-list_chats, .sidebar-list_contacts, .sidebar-list_files {

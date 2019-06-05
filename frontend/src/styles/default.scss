@@ -11,11 +11,19 @@
 @import "project/chats/chats-main";
 @import "project/chats/add-chat";
 @import "project/chats/chats-item";
+@import "project/chats/add-chat-contact-list";
 
 @import "project/files/files-main";
+@import "project/files/add-file";
+@import "project/files/file-list-item";
 
 @import "project/contacts/contacts-main";
 @import "project/contacts/add-contact";
-@import "project/contacts/contacts-item";
+@import "project/contacts/contact-item";
+
+@import "project/chat/chat";
+@import "project/chat/chat-main";
+
+@import "project/message/message";
 
 @import "project/sidebar/sidebar";

@@ -7,13 +7,18 @@ var templatesEngine = require('../modules/templatesEngine');
  * @implements {EventListener}
  * @constructor
  */
-function ContactListItemConstructor(itemData) {
+function ContactConstructor(itemData, type) {
     this._initEventable();
-
-    var templateResult = templatesEngine.contactItem({
-        name: itemData.name
-    });
-
+    switch (type) {
+        case "main":
+            var templateResult = templatesEngine.contactItem({name: itemData.name });
+            break;
+        case "chat":
+            var templateResult = templatesEngine.chatAddContactItem({name: itemData.name });
+            this._checkAction = templateResult.checkAction;
+            this._checkAction.addEventListener('change', this);
+            break;
+    }
     this._root = templateResult.root;
     this._removeAction = templateResult.removeAction;
     this._name = templateResult.name;
@@ -30,17 +35,21 @@ function ContactListItemConstructor(itemData) {
     this._removeAction.addEventListener('click', this);
 }
 
-extendConstructor(ContactListItemConstructor, Eventable);
+extendConstructor(ContactConstructor, Eventable);
 
-var contactListItemConstructorPrototype = ContactListItemConstructor.prototype;
+var contactListItemConstructorPrototype = ContactConstructor.prototype;
 
 /**
  * @param {HTMLElement} parent
- * @return {ContactListItemConstructor}
+ * @return {ContactConstructor}
  */
 contactListItemConstructorPrototype.render = function (parent) {
     parent.appendChild(this._root);
     return this;
+};
+
+contactListItemConstructorPrototype.uncheck = function() {
+    this._checkAction.checked = false;
 };
 
 /**
@@ -53,12 +62,21 @@ contactListItemConstructorPrototype.handleEvent = function (e) {
                 this.remove();
             }
             break;
+        case 'change':
+            if (e.target === this._checkAction) {
+                if (this._checkAction.checked) {
+                    this.trigger('checked', this);
+                } else {
+                    this.trigger('unchecked', this);
+                }
+            }
+            break;
     }
 };
 
 /**
  * @param {String} name
- * @return {ContactListItemConstructor}
+ * @return {ContactConstructor}
  */
 contactListItemConstructorPrototype.setText = function (name) {
     if (this.model.name !== name) {
@@ -70,7 +88,7 @@ contactListItemConstructorPrototype.setText = function (name) {
 
 
 /**
- * @return {ContactListItemConstructor}
+ * @return {ContactConstructor}
  */
 contactListItemConstructorPrototype.remove = function () {
     this._root.parentNode.removeChild(this._root);
@@ -78,4 +96,4 @@ contactListItemConstructorPrototype.remove = function () {
     return this;
 };
 
-module.exports = ContactListItemConstructor;
+module.exports = ContactConstructor;

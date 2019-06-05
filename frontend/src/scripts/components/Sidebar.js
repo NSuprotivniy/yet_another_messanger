@@ -10,6 +10,7 @@ var SIDEBAR_FILES_BUTTON_SELECTOR = ".js-sidebar-list_files";
 var CHATS_PAGE_SELECTOR = ".js-chats-list-page";
 var FILES_PAGE_SELECTOR = ".js-files-page";
 var CONTACTS_PAGE_SELECTOR = ".js-contacts-page";
+var CHAT_PAGE_SELECTOR = ".js-chat-page";
 
 var HIDDEN_MODIFICATOR = "__hidden";
 var ACTIVE_MODIFICATOR = "__active";
@@ -29,6 +30,7 @@ function SidebarConstructor() {
     this._chats_page = document.querySelector(CHATS_PAGE_SELECTOR);
     this._contacts_page = document.querySelector(CONTACTS_PAGE_SELECTOR);
     this._files_page = document.querySelector(FILES_PAGE_SELECTOR);
+    this._chat_page = document.querySelector(CHAT_PAGE_SELECTOR);
 
     this._sidebar_chats_button.addEventListener('click', this);
     this._sidebar_contacts_button.addEventListener('click', this);
@@ -44,30 +46,47 @@ var sidebarConstructorPrototype = SidebarConstructor.prototype;
 sidebarConstructorPrototype.handleEvent = function (e) {
     switch (e.type) {
         case 'click':
-            this._sidebar_chats_button.classList.remove(ACTIVE_MODIFICATOR);
-            this._sidebar_contacts_button.classList.remove(ACTIVE_MODIFICATOR);
-            this._sidebar_files_button.classList.remove(ACTIVE_MODIFICATOR);
-
-            this._chats_page.classList.add(HIDDEN_MODIFICATOR);
-            this._contacts_page.classList.add(HIDDEN_MODIFICATOR);
-            this._files_page.classList.add(HIDDEN_MODIFICATOR);
-
-            switch (e.srcElement) {
+            switch (e.target) {
                 case this._sidebar_chats_button:
-                    this._sidebar_chats_button.classList.add(ACTIVE_MODIFICATOR);
-                    this._chats_page.classList.remove(HIDDEN_MODIFICATOR);
+                    this.setPage("chats");
                     break;
                 case this._sidebar_contacts_button:
-                    this._sidebar_contacts_button.classList.add(ACTIVE_MODIFICATOR);
-                    this._contacts_page.classList.remove(HIDDEN_MODIFICATOR);
+                    this.setPage("contacts");
                     break;
                 case this._sidebar_files_button:
-                    this._sidebar_files_button.classList.add(ACTIVE_MODIFICATOR);
-                    this._files_page.classList.remove(HIDDEN_MODIFICATOR);
+                    this.setPage("files");
                     break;
             }
-            break;
     }
 };
+
+sidebarConstructorPrototype.setPage = function (name) {
+    this._sidebar_chats_button.classList.remove(ACTIVE_MODIFICATOR);
+    this._sidebar_contacts_button.classList.remove(ACTIVE_MODIFICATOR);
+    this._sidebar_files_button.classList.remove(ACTIVE_MODIFICATOR);
+
+    this._chats_page.classList.add(HIDDEN_MODIFICATOR);
+    this._contacts_page.classList.add(HIDDEN_MODIFICATOR);
+    this._files_page.classList.add(HIDDEN_MODIFICATOR);
+    this._chat_page.classList.add(HIDDEN_MODIFICATOR);
+
+    switch (name) {
+        case "chats":
+            this._sidebar_chats_button.classList.add(ACTIVE_MODIFICATOR);
+            this._chats_page.classList.remove(HIDDEN_MODIFICATOR);
+            break;
+        case "contacts":
+            this._sidebar_contacts_button.classList.add(ACTIVE_MODIFICATOR);
+            this._contacts_page.classList.remove(HIDDEN_MODIFICATOR);
+            break;
+        case "files":
+            this._sidebar_files_button.classList.add(ACTIVE_MODIFICATOR);
+            this._files_page.classList.remove(HIDDEN_MODIFICATOR);
+            break;
+        case "chat":
+            this._chat_page.classList.remove(HIDDEN_MODIFICATOR);
+
+    }
+}
 
 module.exports = SidebarConstructor;

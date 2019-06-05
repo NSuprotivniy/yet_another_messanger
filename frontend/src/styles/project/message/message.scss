@@ -1,0 +1,41 @@
+@import "../../config/globals";
+
+
+$avatar-width: 50px;
+$message-height: 50px;
+$message-text-height: 40px;
+
+.message {
+  background: $c-white;
+  border-color: $c-active-border;
+  min-height: $message-height;
+  margin: $offset-2x;
+  clear: both;
+}
+
+.message_creator-avatar {
+  float: left;
+  width: $avatar-width;
+}
+
+.message_creator-avatar.__left {
+  float: right;
+}
+
+.message-footer {
+  display: flex;
+}
+
+.message_creator-name {
+  vertical-align: middle;
+}
+
+.message_created-at {
+
+}
+
+.message_text {
+  min-height: $message-text-height;
+  display: flex;
+  align-items: center;
+}
