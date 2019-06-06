@@ -11,6 +11,9 @@ var itemsIdIterator = 0;
  * @extends {Eventable}
  * @constructor
  */
+
+
+
 function ContactListConstructor() {
     /**
      * @type {Array.<ChatsConstructor>}
@@ -20,34 +23,21 @@ function ContactListConstructor() {
     this._itemsChat = [];
     this._contactList = document.querySelector(CONTACT_LIST_SELECTOR);
     this._chatAddContactList = document.querySelector(CHAT_ADD_CONTACT_LIST_SELECTOR);
-
     this._initEventable();
+    var response = jsonSender.getContacts("fingerprint");
+    if (response.status === 200) {
+        for (let i = 0; i < response.uuids.length; i++) {
+            this.createLocalItem({uuid: response.uuids[i], name: response.names[i]});
+        }
+    }
+
 }
 
 extendConstructor(ContactListConstructor, Eventable);
 
 var contactListConstructorPrototype = ContactListConstructor.prototype;
 
-/**
- * @return {Number}
- */
-contactListConstructorPrototype.getItemsCount = function () {
-    return this._items.length;
-};
-
-/**
- * @param {Object} contactItemData
- * @return {ContactListConstructor}
- */
-contactListConstructorPrototype.createItem = function (contactItemData) {
-
-    var mail = contactItemData.email;
-    console.log(mail);
-    var answer = jsonSender.createFriend("fingerprint",mail);
-    contactItemData = Object.assign(contactItemData, {uuid: answer.params.uuid, name:answer.params.name});
-    console.log(contactItemData);
-    //contactItemData
-
+contactListConstructorPrototype.createLocalItem = function (contactItemData) {
     var itemMainContactList = new Contact(Object.assign(
         {
             id: contactItemData.uuid,
@@ -76,6 +66,29 @@ contactListConstructorPrototype.createItem = function (contactItemData) {
         .render(this._chatAddContactList);
 
     return this;
+};
+
+/**
+ * @return {Number}
+ */
+contactListConstructorPrototype.getItemsCount = function () {
+    return this._items.length;
+};
+
+/**
+ * @param {Object} contactItemData
+ * @return {ContactListConstructor}
+ */
+contactListConstructorPrototype.createItem = function (contactItemData) {
+
+    var mail = contactItemData.email;
+    console.log(mail);
+    var answer = jsonSender.createFriend("fingerprint",mail);
+    contactItemData = Object.assign(contactItemData, {uuid: answer.params.uuid, name:answer.params.name});
+    console.log(contactItemData);
+    //contactItemData
+    createLocalItem(contactItemData);
+   
 };
 
 

@@ -20,7 +20,7 @@ function ChatListConstructor() {
     this._items = [];
     this._chatsList = document.querySelector(CHATS_LIST_SELECTOR);
     var response = jsonSender.getChats();
-
+    console.log(response);
     if (response.status === 200) {
         for (let i = 0; i < response.uuids.length; i++) {
             this.createItem({uuid: response.uuids[i], name: response.names[i]});
