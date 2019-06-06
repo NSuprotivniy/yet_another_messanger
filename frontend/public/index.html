@@ -105,6 +105,8 @@
             <li class="far fa-comment sidebar-list_chats js-sidebar-list_chats __active"></li>
             <li class="far fa-address-book sidebar-list_contacts js-sidebar-list_contacts"></li>
             <li class="far fa-file-alt sidebar-list_files js-sidebar-list_files"></li>
+            <li class="fas fa-sign-in-alt sidebar-login js-sidebar-login"></li>
+            <li class="fas fa-user-plus sidebar-registration js-sidebar-registration"></li>
         </ul>
     </div>
 
@@ -136,6 +138,32 @@
     </div>
 
     <div class="chat-page js-chat-page __hidden"></div>
+
+    <div class="login-page js-login-page __hidden">
+        <div class="credentials-field-w">
+            <input class="credentials-field-text js-credentials-email"  placeholder="Эл. почта" aria-label="Поле ввода электронной почты">
+        </div>
+        <div class="credentials-field-w">
+            <input class="credentials-field-text js-credentials-password"  placeholder="Пароль" aria-label="Поле ввода пароля">
+        </div>
+        <button class="auth-action-button js-login-action-button" aria-label="Войти">Войти</button>
+    </div>
+
+    <div class="registration-page js-registration-page __hidden">
+        <div class="credentials-field-w">
+            <input class="credentials-field-text js-credentials-name"  placeholder="Имя" aria-label="Поле ввода имени">
+        </div>
+        <div class="credentials-field-w">
+            <input class="credentials-field-text js-credentials-email"  placeholder="Эл. почта" aria-label="Поле ввода электронной почты">
+        </div>
+        <div class="credentials-field-w">
+            <input class="credentials-field-text js-credentials-password"  placeholder="Пароль" aria-label="Поле ввода пароля">
+        </div>
+        <div class="credentials-field-w">
+            <input class="credentials-field-text js-credentials-password-confirmation"  placeholder="Подтверждение пароль" aria-label="Поле ввода пароля">
+        </div>
+        <button class="auth-action-button js-registration-action-button" aria-label="Зарегистрироваться">Зарегистрироваться</button>
+    </div>
 </div>
 
 </body>

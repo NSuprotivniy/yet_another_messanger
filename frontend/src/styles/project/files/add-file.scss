@@ -17,13 +17,11 @@
 
 .file-input-label {
   cursor: pointer;
-  border-radius: 5px;
-  border: 2px solid transparent;
   font-size: 1.25em;
   font-weight: 700;
   display: inline-block;
 
   @include hover {
-    border-color:  $c-active-border;
+    font-color:  $c-active-border;
   }
 }

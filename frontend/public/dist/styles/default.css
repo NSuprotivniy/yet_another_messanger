@@ -489,15 +489,13 @@ input.action_target {
 
 .file-input-label {
   cursor: pointer;
-  border-radius: 5px;
-  border: 2px solid transparent;
   font-size: 1.25em;
   font-weight: 700;
   display: inline-block;
 }
 
 .hover .file-input-label:hover {
-  border-color: #7fff90;
+  font-color: #7fff90;
 }
 
 .file {
@@ -891,7 +889,9 @@ input.action_target {
 
 .sidebar-list_chats,
 .sidebar-list_contacts,
-.sidebar-list_files {
+.sidebar-list_files,
+.sidebar-login,
+.sidebar-registration {
   font-size: 24px;
   margin: 8px;
   color: #666;
@@ -899,7 +899,73 @@ input.action_target {
 
 .sidebar-list_chats.__active,
 .sidebar-list_contacts.__active,
-.sidebar-list_files.__active {
+.sidebar-list_files.__active,
+.sidebar-login.__active,
+.sidebar-registration .__active {
   color: #7fff90;
+}
+
+.credentials-field-w {
+  margin: 8px;
+  overflow: hidden;
+}
+
+.credentials-field-text {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 24px;
+  height: 64px;
+  padding: 16px;
+  border: 0;
+  outline: 0;
+  font-weight: 300;
+  color: #666;
+}
+
+.credentials-field-text::-webkit-input-placeholder {
+  color: #ccc;
+  font-style: italic;
+}
+
+.credentials-field-text:-moz-placeholder {
+  color: #ccc;
+  font-style: italic;
+}
+
+.credentials-field-text::-moz-placeholder {
+  color: #ccc;
+  font-style: italic;
+}
+
+.credentials-field-text:-ms-input-placeholder {
+  color: #ccc;
+  font-style: italic;
+}
+
+.auth-action-button {
+  background-color: #7fff90;
+  font-size: 24px;
+  color: white;
+  padding: 14px 30px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.login-page {
+  width: 100%;
+}
+
+.login-page.__hidden {
+  display: none;
+}
+
+.registration-page {
+  width: 100%;
+}
+
+.registration-page.__hidden {
+  display: none;
 }
 /*# sourceMappingURL=default.css.map */
