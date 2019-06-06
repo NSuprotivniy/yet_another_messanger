@@ -16,6 +16,8 @@ function FileConstructor(model) {
     this._removeAction = templateResult.removeAction;
     this._name = templateResult.name;
 
+    
+
     this.model = {
         id: model.id,
         name: model.name,

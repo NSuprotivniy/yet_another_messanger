@@ -1,7 +1,7 @@
 var Eventable = require('../modules/Eventable');
 var extendConstructor = require('../utils/extendConstructor');
 var FileBuffer = require('../components/FilesBuffer');
-
+var jsonSender = require('../modules/JsonSender');
 var File = require('../components/File');
 
 var FILE_PAGE_SELECTOR = '.js-files-page';
@@ -58,10 +58,12 @@ fileListConstructorPrototype.createItem = function () {
         }, false);
         var name = file.name;
         var base64 = btoa(result);
+        
+        var uuid = jsonSender.upload_file(base64, name, fingerprint);
 
         var fileItem = new File(Object.assign(
             {
-                id: itemsIdIterator++,
+                id: uuid,
                 name: name,
             },
         ));

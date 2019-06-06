@@ -22,7 +22,7 @@ function ContactConstructor(itemData, type) {
     this._root = templateResult.root;
     this._removeAction = templateResult.removeAction;
     this._name = templateResult.name;
-
+    
     this.model = {
         id: itemData.id,
         name: itemData.name

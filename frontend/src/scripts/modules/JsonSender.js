@@ -1,11 +1,13 @@
-var IP = 'http://188.243.95.184:9090';
+var IP = 'http://188.243.95.184:9090'
+var xhr;
 
-var send_json = function (xhr, main_json, cookies, fingerprint, uuid)
+var send_json = function (main_json, fingerprint, uuid, flag)
 {
     if (main_json != null) {
         xhr.setRequestHeader("fingerprint", fingerprint)
         console.log("sending all\n");
         console.log(main_json);
+        console.log(xhr.status);
         xhr.send(main_json);
     } else {
         if (uuid != null) {
@@ -14,28 +16,48 @@ var send_json = function (xhr, main_json, cookies, fingerprint, uuid)
         console.log("sending\n");
         xhr.send();
     }
-
-        if (xhr.status != 200) {
-            alert(xhr.status);
-            return null;
-        } else {
-            var event = JSON.parse(xhr.responseText);
-            if (flag == 1) {
-                var token = xhr.getResponseHeader("Set-Cookie");
-                var result = {
-                    result: event,
-                    cookie: token
-                };
-                alert(result);
-                return result;
-            }
-            alert(event);
-            return event;
+    console.log("sent\n");
+    if (xhr.status != 200) {
+        console.log("sent\n");
+        alert(xhr.status);
+        return null;
+    } else {
+        console.log("sent\n");
+        var event = JSON.parse(xhr.responseText);
+        if (flag == 1) {
+            var token = xhr.getResponseHeader("Set-Cookie");
+            var result = {
+                result: event,
+                cookie: token
+            };
+            alert(result);
+            return result;
         }
-
+        alert(event);
+        return event;
+    }
 }
 
 var jsonSender = {
+
+    upload_file: function (body, name, fingerprint)
+    {
+        xhr = new XMLHttpRequest();
+        xhr.open('POST', IP + '/file', false);
+        var params_json = {
+            body: body,
+            name: '[' + name + ']'
+        };
+        var main_json = {
+            id: "1234",
+            jsonrpc: "2.0",
+            method: "create_user",
+            params: params_json
+        };
+        var result = send_json(main_json, fingerprint, null, 0);
+        return result.params.uuid;
+    },
+
     login: function (user_email, user_password) {
         console.log(user_email);
         var xhr = new XMLHttpRequest();
@@ -186,8 +208,28 @@ var jsonSender = {
             params: params_json
         };
 
-        var result = send_json(main_json, fingerprint, null, 0);
-        return result;
+        xhr.setRequestHeader("fingerprint", fingerprint)
+        xhr.send(main_json);
+    if (xhr.status != 200) {
+        return null;
+    } else {
+        var event = JSON.parse(xhr.responseText);
+        if (flag == 1) {
+            var token = xhr.getResponseHeader("Set-Cookie");
+            var result = {
+                result: event,
+                cookie: token
+            };
+            alert(result);
+            return result;
+        }
+        return event;
+    }
+    },
+
+    create_msg(chat_uuid, fingerrint)
+    {
     }
 }
 module.exports = jsonSender;
+
