@@ -125,7 +125,22 @@ var templatesEngine = {
             root: root,
             removeAction: removeAction
         };
+    },
 
+    fileToChoose: function(data) {
+        var root = getTemplateRootNode('fileToChoose');
+        var name = root.querySelector('.js-file-to-choose_name');
+        var id = root.querySelector('.js-file-to-choose_id');
+        if (data.name) {
+            name.innerText = data.name;
+        }
+        if (data.id) {
+            id.innerText = data.id;
+        }
+        return {
+            root: root,
+            id: id
+        };
     }
 };
 

@@ -1,6 +1,6 @@
 var Eventable = require('../modules/Eventable');
 var extendConstructor = require('../utils/extendConstructor');
-var Message = require('../components/Message')
+var Message = require('../components/Message');
 var templatesEngine = require('../modules/templatesEngine');
 var FileBuffer = require('../components/FilesBuffer');
 
@@ -8,6 +8,7 @@ var ENTER_KEY_CODE = 13;
 
 var CHAT_PAGE_SELECTOR = ".js-chat-page";
 var FILES_TO_CHOOSE_SELECTOR = ".js-chat_files-to-choose";
+var FILES_TO_CHOOSE_ID_SELECTOR = ".js-file-to-choose_id";
 
 /**
  * @param itemData
@@ -33,7 +34,7 @@ function ChatConstructor(model) {
 
     this._messageInput.addEventListener('keypress', this);
     this._chatPage = document.querySelector(CHAT_PAGE_SELECTOR);
-    this.filesToChoose = this._root.querySelector(FILES_TO_CHOOSE_SELECTOR);
+    this._filesToChoose = this._root.querySelector(FILES_TO_CHOOSE_SELECTOR);
 
     this._fileBuffer = new FileBuffer();
     this._filesToAdd = [];
@@ -68,22 +69,43 @@ chatConstructorPrototype._createMessage = function () {
     });
     message.render(this._messageList);
     this._messageList.scrollTop = this._messageList.scrollHeight;
-}
+};
 
 chatConstructorPrototype._parseFiles = function () {
     var text = this._messageInput.value.trim();
+    var fileModels = [];
     var myRegexp = /\[(.*?)\]/g;
     var match = myRegexp.exec(text);
     while (match != null) {
         var fileName = match[1];
-        var fileModel;
         this._fileBuffer.getFiles().forEach(function (file) {
-            /// TODO
+            if (file.name.startsWith(fileName)) {
+                fileModels.push(file);
+            }
         });
-        this._parsedFiles.push();
         match = myRegexp.exec(text);
     }
-}
+    this._filesToChoose.innerHTML = '';
+    for (var i = fileModels.length; i-- ;) {
+        var fileModel = fileModels[i];
+        var fileToChoose = templatesEngine.fileToChoose({
+            name: fileModel.name,
+            id: fileModel.id});
+        this._filesToChoose.appendChild(fileToChoose.root);
+        fileToChoose.root.addEventListener('click', this);
+    }
+};
+
+chatConstructorPrototype._addFileToSend = function(target) {
+    var id = target.querySelector(FILES_TO_CHOOSE_ID_SELECTOR);
+    var fileModel;
+    this._fileBuffer.getFiles().forEach(function (file) {
+        if (file.id == id.innerHTML) {
+            fileModel = file;
+        }
+    });
+    this._filesToAdd.push(fileModel);
+};
 
 
 /**
@@ -95,6 +117,7 @@ chatConstructorPrototype.handleEvent = function (e) {
             switch (e.target) {
                 case this._messageInput:
                     if (e.keyCode === ENTER_KEY_CODE) {
+                        this._filesToChoose.innerHTML = '';
                         this._createMessage();
                     } else {
                         this._parseFiles();
@@ -102,6 +125,13 @@ chatConstructorPrototype.handleEvent = function (e) {
                     break;
             }
             break;
+        case 'click':
+            switch (e.target.parentNode) {
+                case this._filesToChoose:
+                    this._addFileToSend(e.target);
+                    this._filesToChoose.innerHTML = '';
+                    break;
+            }
     }
 };
 

@@ -39,6 +39,28 @@ $chat-height: 500px;
   }
 }
 
+.chat_files-to-choose {
+  flex: 1;
+  overflow: auto;
+  margin: $offset;
+}
+
+.file-to-choose_id {
+  display: none;
+}
+
+.file-to-choose {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: $fs_xx-small;
+  height: 32px;
+  padding: $offset_4x;
+  border: 0;
+  outline: 0;
+  font-weight: 300;
+  color: $c-gray;
+}
+
 .js-chat_message-list {
   flex: 1;
   overflow: auto;
