@@ -1,6 +1,6 @@
 var Eventable = require('../modules/Eventable');
 var extendConstructor = require('../utils/extendConstructor');
-
+var jsonSender = require('../modules/JsonSender');
 var Contact = require('../components/Contact');
 
 var CONTACT_LIST_SELECTOR = '.js-contact-list';
@@ -40,9 +40,16 @@ contactListConstructorPrototype.getItemsCount = function () {
  * @return {ContactListConstructor}
  */
 contactListConstructorPrototype.createItem = function (contactItemData) {
+
+    var mail = contactItemData.email;
+    var answer = jsonSender.createFriend("fingering",mail);
+    contactItemData = Object.assign(contactItemData, answer.params.uuid, answer.params.name);
+    
+    //contactItemData
+
     var itemMainContactList = new Contact(Object.assign(
         {
-            id: itemsIdIterator,
+            id: contactItemData.uuid,
         },
         contactItemData
     ), "main");

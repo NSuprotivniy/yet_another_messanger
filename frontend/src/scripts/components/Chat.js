@@ -63,6 +63,9 @@ chatConstructorPrototype._createMessage = function () {
     if (text.length !== 0) {
         this._messageInput.value = '';
     }
+
+    
+
     var message = new Message({
         id: this._messagesCount++,
         text: text

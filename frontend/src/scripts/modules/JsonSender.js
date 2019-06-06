@@ -1,47 +1,63 @@
-var IP = ''
+var IP = 'http://188.243.95.184:9090'
 var xhr;
 
-var send_json = function (main_json, cookies, fingerprint, uuid, flag)
+var send_json = function (main_json, fingerprint, uuid, flag)
 {
     if (main_json != null) {
-        xhr.setRequestHeader("cookies", cookies)
         xhr.setRequestHeader("fingerprint", fingerprint)
-        xhr.send(JSON.stringify(main_json, cookies, fingerprint));
+        console.log("sending all\n");
+        console.log(main_json);
+        console.log(xhr.status);
+        xhr.send(main_json);
     } else {
         if (uuid != null) {
             hr.setRequestHeader("uuid", uuid)
         }
+        console.log("sending\n");
         xhr.send();
     }
-
+    console.log("sent\n");
     if (xhr.status != 200) {
-        // обработать ошибку
-        console.log(xhr.status + ': ' + xhr.statusText); // пример вывода: 404: Not Found
+        console.log("sent\n");
+        alert(xhr.status);
         return null;
     } else {
-        // вывести результат
-        //var myHeader = xhr.getResponseHeader('token');
-
+        console.log("sent\n");
         var event = JSON.parse(xhr.responseText);
-        /* var response = {
-           token: myHeader,
-           uuid: event.params.uuid,
-           name: event.params.name
-         };*/
         if (flag == 1) {
             var token = xhr.getResponseHeader("Set-Cookie");
             var result = {
                 result: event,
                 cookie: token
             };
+            alert(result);
             return result;
         }
-        console.log(event); // responseText -- текст ответа.
+        alert(event);
         return event;
     }
 }
 
 var jsonSender = {
+
+    upload_file: function (body, name, fingerprint)
+    {
+        xhr = new XMLHttpRequest();
+        xhr.open('POST', IP + '/file', false);
+        var params_json = {
+            body: body,
+            name: '[' + name + ']'
+        };
+        var main_json = {
+            id: "1234",
+            jsonrpc: "2.0",
+            method: "create_user",
+            params: params_json
+        };
+        var result = send_json(main_json, fingerprint, null, 0);
+        return result.params.uuid;
+    },
+
     login: function (user_email, user_password) {
         console.log(user_email);
         xhr = new XMLHttpRequest();
@@ -59,8 +75,8 @@ var jsonSender = {
             params: params_json
         };
 
-        console.log(JSON.stringify(main_json));
-        var result = send_json(main_json, null, null, null, 1);
+        //console.log(JSON.stringify(main_json));
+        var result = send_json(main_json, null, null, 1);
         console.log(result);
         //localStorage.setItem('token',token);
         return {name: result.result.params.name, uuid: result.result.params.uuid, cookie: result.token};
@@ -176,14 +192,12 @@ var jsonSender = {
         };
 
         var result = send_json(main_json, cookies, fingerprint, null, 0);
-        return true;
+        return result;
     },
 
-    createFriend: function (cookies, fingerprint, name, email) {
+    createFriend: function (fingerprint, email) {
         xhr = new XMLHttpRequest();
         xhr.open('POST', IP + '/contact', false);
-
-        var participantsUUIDs = JSON.stringify(uuids);
 
         var params_json = {
             email: email,
@@ -196,8 +210,28 @@ var jsonSender = {
             params: params_json
         };
 
-        var result = send_json(main_json, cookies, fingerprint, null, 0);
-        return true;
+        xhr.setRequestHeader("fingerprint", fingerprint)
+        xhr.send(main_json);
+    if (xhr.status != 200) {
+        return null;
+    } else {
+        var event = JSON.parse(xhr.responseText);
+        if (flag == 1) {
+            var token = xhr.getResponseHeader("Set-Cookie");
+            var result = {
+                result: event,
+                cookie: token
+            };
+            alert(result);
+            return result;
+        }
+        return event;
+    }
+    },
+
+    create_msg(chat_uuid, fingerrint)
+    {
     }
 }
+module.exports = jsonSender;
 

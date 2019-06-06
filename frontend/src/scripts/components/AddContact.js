@@ -31,7 +31,7 @@ addContactConstructorPrototype._addItem = function () {
     }
 
     return this.trigger('newContact', {
-        name: contactInputValue
+        email: contactInputValue
     });
 };
 
