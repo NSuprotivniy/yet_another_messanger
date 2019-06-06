@@ -59,7 +59,7 @@ fileListConstructorPrototype.createItem = function () {
         var name = file.name;
         var base64 = btoa(result);
         
-        var uuid = jsonSender.upload_file(base64, name, fingerprint);
+        var uuid = jsonSender.upload_file(base64, name, "fingerprint");
 
         var fileItem = new File(Object.assign(
             {
