@@ -14,6 +14,7 @@ var send_json = function (main_json, fingerprint, uuid, flag)
             hr.setRequestHeader("uuid", uuid)
         }
         console.log("sending\n");
+        console.log(xhr.status)
         xhr.send();
     }
     console.log("sent\n");
@@ -158,17 +159,21 @@ var jsonSender = {
         return result;
     },
 
-    getContacts: function (cookies, fingerprint) {
+    getContacts: function (fingerprint) {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', IP + '/contacts', false);
-        var result = send_json(null, cookies, fingerprint, null, 0);
+        xhr.setRequestHeader("fingerprint", 'fingerprint')
+        xhr.send();
+        var result = JSON.parse(xhr.responseText);
+        console.log(result);
+        //var result = send_json(null, fingerprint, null, 0);
         var uuids = [], names = [];
         for (var i = 0; i < result.params.uuids.length; i++) {
             uuids.push(result.params.uuids[i])
             names.push(result.params.names[i]);
         }
         console.log({uuids, names});
-        return {uuids, names};
+        return Object.assign({status: xhr.status}, result.params);
     },
 
     createChat: function (cookies, fingerprint, name, uuids) {
