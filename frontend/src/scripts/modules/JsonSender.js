@@ -1,4 +1,4 @@
-var IP = 'http://188.243.95.184:9090'
+var IP = 'http://192.168.43.15:9090'
 var xhr;
 
 var send_json = function (main_json, fingerprint, uuid, flag)
@@ -219,7 +219,7 @@ var jsonSender = {
     }
     },
 
-    create_msg(chat_uuid, text, fingerrint)
+    create_msg(chat_uuid, text)
     {
         xhr = new XMLHttpRequest();
         xhr.open('POST', IP + '/message', false);
@@ -234,23 +234,14 @@ var jsonSender = {
             method: "create_user",
             params: params_json
         };
-        xhr.setRequestHeader("fingerprint", fingerprint)
-        xhr.send(main_json);
-    if (xhr.status != 200) {
-        return null;
-    } else {
-        var event = JSON.parse(xhr.responseText);
-        if (flag == 1) {
-            var token = xhr.getResponseHeader("Set-Cookie");
-            var result = {
-                result: event,
-                cookie: token
-            };
-            alert(result);
-            return result;
+        xhr.setRequestHeader("fingerprint", 'fingerprint')
+        xhr.send(JSON.stringify(main_json));
+        if (xhr.status != 200) {
+            return null;
+        } else {
+            var event = JSON.parse(xhr.responseText);
+            return event.params;
         }
-        return event;
-    }
     }
 }
 module.exports = jsonSender;

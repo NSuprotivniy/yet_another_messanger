@@ -38,6 +38,7 @@ loginConstructorPrototype.login = function() {
     }
 
     var response = jsonSender.login(email, password);
+    localStorage.setItem("userUUID", response.uuid);
     this.trigger('login');
 };
 

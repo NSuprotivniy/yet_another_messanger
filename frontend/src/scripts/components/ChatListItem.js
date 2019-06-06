@@ -10,22 +10,16 @@ var CHAT_PAGE_SELECTOR = ".js-chat-page";
  * @implements {EventListener}
  * @constructor
  */
-function ChatListItemConstructor(itemData) {
+function ChatListItemConstructor(model) {
     this._initEventable();
 
-    var templateResult = templatesEngine.chatItem({
-        name: itemData.name
-    });
+    var templateResult = templatesEngine.chatItem(model);
 
     this._root = templateResult.root;
     this._removeAction = templateResult.removeAction;
     this._name = templateResult.name;
 
-    this.model = {
-        id: itemData.id,
-        name: itemData.name,
-        participants: itemData.participants
-    };
+    this.model = model;
 
     this._removeAction.addEventListener('click', this);
     this._name.addEventListener('click', this);

@@ -3,6 +3,7 @@ var extendConstructor = require('../utils/extendConstructor');
 var Message = require('../components/Message');
 var templatesEngine = require('../modules/templatesEngine');
 var FileBuffer = require('../components/FilesBuffer');
+var jsonSender = require('../modules/JsonSender');
 
 var ENTER_KEY_CODE = 13;
 
@@ -63,12 +64,14 @@ chatConstructorPrototype._createMessage = function () {
     if (text.length !== 0) {
         this._messageInput.value = '';
     }
-
-    
+    var response = jsonSender.create_msg(this.model.uuid, text);
 
     var message = new Message({
         id: this._messagesCount++,
-        text: text
+        uuid: response.uuid,
+        text: text,
+        chatUUUID: this.model.uuid,
+        creatorUUID: localStorage.getItem("userUUID")
     });
     message.render(this._messageList);
     this._messageList.scrollTop = this._messageList.scrollHeight;
