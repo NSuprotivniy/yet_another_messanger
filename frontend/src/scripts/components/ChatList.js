@@ -1,6 +1,6 @@
 var Eventable = require('../modules/Eventable');
 var extendConstructor = require('../utils/extendConstructor');
-
+var jsonSender = require('../modules/JsonSender');
 var ChatListItem = require('../components/ChatListItem');
 
 var CHATS_LIST_SELECTOR = '.js-chats-list';
@@ -15,9 +15,17 @@ function ChatListConstructor() {
      * @type {Array.<ChatsConstructor>}
      * @private
      */
+    this._initEventable();
+
     this._items = [];
     this._chatsList = document.querySelector(CHATS_LIST_SELECTOR);
-    this._initEventable();
+    var response = jsonSender.getChats();
+
+    if (response.status === 200) {
+        for (let i = 0; i < response.uuids.length; i++) {
+            this.createItem({uuid: response.uuids[i], name: response.names[i]});
+        }
+    }
 }
 
 extendConstructor(ChatListConstructor, Eventable);

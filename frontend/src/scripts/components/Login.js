@@ -1,5 +1,6 @@
 var extendConstructor = require('../utils/extendConstructor');
 var Eventable = require('../modules/Eventable');
+var jsonSender = require('../modules/JsonSender');
 
 var LOGIN_PAGE_SELECTOR = '.js-login-page';
 var EMAIL_INPUT_SELECTOR = '.js-credentials-email';
@@ -36,6 +37,7 @@ loginConstructorPrototype.login = function() {
         this._passwordInput.value = '';
     }
 
+    var response = jsonSender.login(email, password);
     this.trigger('login');
 };
 
