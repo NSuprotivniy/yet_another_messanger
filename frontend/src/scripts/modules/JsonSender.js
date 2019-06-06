@@ -196,6 +196,7 @@ var jsonSender = {
     createFriend: function (fingerprint, email) {
         xhr = new XMLHttpRequest();
         xhr.open('POST', IP + '/contact', false);
+        console.log(email);
 
         var params_json = {
             email: email,
@@ -208,6 +209,31 @@ var jsonSender = {
             params: params_json
         };
 
+        xhr.setRequestHeader("fingerprint", fingerprint)
+        xhr.send(JSON.stringify(main_json));
+    if (xhr.status != 200) {
+        return null;
+    } else {
+        var event = JSON.parse(xhr.responseText);
+        return event;
+    }
+    },
+
+    create_msg(chat_uuid, text, fingerrint)
+    {
+        xhr = new XMLHttpRequest();
+        xhr.open('POST', IP + '/message', false);
+
+        var params_json = {
+            chatUUID: chat_uuid,
+            text: text
+        };
+        var main_json = {
+            id: "1234",
+            jsonrpc: "2.0",
+            method: "create_user",
+            params: params_json
+        };
         xhr.setRequestHeader("fingerprint", fingerprint)
         xhr.send(main_json);
     if (xhr.status != 200) {
@@ -225,10 +251,6 @@ var jsonSender = {
         }
         return event;
     }
-    },
-
-    create_msg(chat_uuid, fingerrint)
-    {
     }
 }
 module.exports = jsonSender;

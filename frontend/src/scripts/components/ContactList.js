@@ -42,9 +42,10 @@ contactListConstructorPrototype.getItemsCount = function () {
 contactListConstructorPrototype.createItem = function (contactItemData) {
 
     var mail = contactItemData.email;
-    var answer = jsonSender.createFriend("fingering",mail);
-    contactItemData = Object.assign(contactItemData, answer.params.uuid, answer.params.name);
-    
+    console.log(mail);
+    var answer = jsonSender.createFriend("fingerprint",mail);
+    contactItemData = Object.assign(contactItemData, {uuid: answer.params.uuid, name:answer.params.name});
+    console.log(contactItemData);
     //contactItemData
 
     var itemMainContactList = new Contact(Object.assign(
