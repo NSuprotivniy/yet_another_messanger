@@ -901,7 +901,7 @@ input.action_target {
 .sidebar-list_contacts.__active,
 .sidebar-list_files.__active,
 .sidebar-login.__active,
-.sidebar-registration .__active {
+.sidebar-registration.__active {
   color: #7fff90;
 }
 

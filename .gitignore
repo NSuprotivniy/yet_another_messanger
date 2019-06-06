@@ -2,7 +2,7 @@
 *.iml
 out/
 target/
-config/
+/server/config/
 local.properties
 /androidapp/.gradle/
 /androidapp/gradle/

@@ -4,10 +4,19 @@ var Sidebar = require('./components/Sidebar');
 var AddContact = require('./components/AddContact');
 var ContactList = require('./components/ContactList');
 var FileList = require('./components/FileList');
+var Login = require('./components/Login');
+var Registration = require('./components/Registration');
+
 
 
 function init() {
     var sidebar = new Sidebar();
+
+    var login = new Login();
+    var registration = new Registration();
+
+    login.on('login', function () { sidebar.setPage("chats"); });
+    registration.on('registration', function () { sidebar.setPage("chats"); });
 
     var addChat = new AddChat();
     var chatList = new ChatList();
