@@ -4,11 +4,11 @@ var xhr;
 var send_json = function (main_json, fingerprint, uuid, flag)
 {
     if (main_json != null) {
-        xhr.setRequestHeader("fingerprint", fingerprint)
+        xhr.setRequestHeader("fingerprint", 'fingerprint')
         console.log("sending all\n");
         console.log(main_json);
         console.log(xhr.status);
-        xhr.send(main_json);
+        xhr.send(JSON.stringify(main_json));
     } else {
         if (uuid != null) {
             hr.setRequestHeader("uuid", uuid)
