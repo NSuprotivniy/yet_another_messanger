@@ -7,12 +7,16 @@
 .sidebar-list {
 }
 
-.sidebar-list_chats, .sidebar-list_contacts, .sidebar-list_files, .sidebar-login, .sidebar-registration {
+.sidebar-icon {
   font-size: $fs_xx-large;
   margin: $offset_2x;
   color: $c-gray;
 }
 
-.sidebar-list_chats.__active, .sidebar-list_contacts.__active, .sidebar-list_files.__active, .sidebar-login.__active, .sidebar-registration.__active{
+.sidebar-icon.__active {
   color: $c-active-border;
+}
+
+.sidebar-icon.__hidden {
+  display: none;
 }

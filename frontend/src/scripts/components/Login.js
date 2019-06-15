@@ -38,9 +38,16 @@ loginConstructorPrototype.login = function() {
     }
 
     var response = jsonSender.login(email, password);
-    localStorage.setItem("userUUID", response.uuid);
-    this.trigger('login');
+    if (response.status === 200) {
+        localStorage.setItem("userUUID", response.uuid);
+        this.trigger('login');
+    };
 };
+
+loginConstructorPrototype.resetSession = function() {
+    localStorage.removeItem("userUUID");
+    jsonSender.logout();
+}
 
 loginConstructorPrototype.handleEvent = function (e) {
     switch (e.type) {

@@ -6,36 +6,68 @@ var ContactList = require('./components/ContactList');
 var FileList = require('./components/FileList');
 var Login = require('./components/Login');
 var Registration = require('./components/Registration');
-
-
+var websocketInstance = require('./modules/WebsocketInstance');
 
 function init() {
-    var sidebar = new Sidebar();
+    try {
+        var sidebar = new Sidebar();
+        var login = new Login();
+        var registration = new Registration();
 
-    var login = new Login();
-    var registration = new Registration();
+        websocketInstance.on("logonError", function () {
+            sidebar.setPage("login");
+        });
 
-    login.on('login', function () { sidebar.setPage("chats"); });
-    registration.on('registration', function () { sidebar.setPage("chats"); });
+        var addChat = new AddChat();
+        var chatList = new ChatList();
+        addChat.on('newChat', function (chatData) {
+            chatList.createItem(chatData);
+            sidebar.setPage("chat");
+        });
 
-    var addChat = new AddChat();
-    var chatList = new ChatList();
-    addChat.on('newChat', function (chatData) {
-        chatList.createItem(chatData);
-        sidebar.setPage("chat");
-    });
+        chatList.on('openChat', function (modelId) {
+            sidebar.setPage("chat");
+        });
 
-    chatList.on('openChat', function (modelId) { sidebar.setPage("chat"); });
+        var addContact = new AddContact();
+        var contactList = new ContactList();
 
-    var addContact = new AddContact();
-    var contactList = new ContactList();
+        addContact.on('newContact', function (contactData) {
+            contactList.createItem(contactData);
+        });
+        contactList
+            .on('itemChecked', function (contact) {
+                addChat._onContactItemChecked(contact);
+            })
+            .on('itemUnchecked', function (contact) {
+                addChat._onContactItemUnchecked(contact);
+            });
 
-    addContact.on('newContact',function (contactData) { contactList.createItem(contactData); });
-    contactList
-        .on('itemChecked', function(contact) {addChat._onContactItemChecked(contact); })
-        .on('itemUnchecked', function(contact) {addChat._onContactItemUnchecked(contact); });
+        var fileList = new FileList();
 
-    var fileList = new FileList();
+        login.on('login', function () {
+            sidebar.setLoggedOn();
+            chatList.loadChats();
+            contactList.loadContacts();
+        });
+        registration.on('registration', function () {
+            sidebar.setLoggedOn();
+            chatList.loadChats();
+            contactList.loadContacts();
+        });
+
+        sidebar.on("logoutButton", function () {
+           login.resetSession();
+           chatList.clear();
+           contactList.clear();
+        });
+
+    } catch (e) {
+        if (e.name === "LogonError") {
+            login.resetSession();
+            sidebar.setPage("login");
+        }
+    }
 
 }
 

@@ -83,7 +83,7 @@ var templatesEngine = {
         var root = getTemplateRootNode('message');
         var text = root.querySelector('.js-message_text');
         var creatorName = root.querySelector('.js-message_creator-name');
-        var createdAt = root.querySelector('.s-message_created-at');
+        var createdAt = root.querySelector('.js-message_created-at');
         var avatar = root.querySelector('.js-message_creator-avatar');
 
         if (data.text) {
@@ -93,7 +93,9 @@ var templatesEngine = {
             creatorName.innerText = data.creatorName;
         }
         if (data.createdAt) {
-            createdAt.innerText = data.createdAt;
+            var myDate = new Date( data.createdAt);
+            var date = (myDate.getFullYear() + '-' +('0' + (myDate.getMonth()+1)).slice(-2)+ '-' +  myDate.getDate() + ' '+myDate.getHours()+ ':'+('0' + (myDate.getMinutes())).slice(-2)+ ':'+myDate.getSeconds());
+            createdAt.innerText = date;
         }
         if (data.avatar) {
             avatar.innerText = data.avatar;
@@ -118,7 +120,9 @@ var templatesEngine = {
             creatorName.innerText = data.creatorName;
         }
         if (data.createdAt) {
-            createdAt.innerText = data.createdAt;
+            var myDate = new Date( data.createdAt);
+            var date = (myDate.getFullYear() + '-' +('0' + (myDate.getMonth()+1)).slice(-2)+ '-' +  myDate.getDate() + ' '+myDate.getHours()+ ':'+('0' + (myDate.getMinutes())).slice(-2)+ ':'+myDate.getSeconds());
+            createdAt.innerText = date;
         }
 
         return {

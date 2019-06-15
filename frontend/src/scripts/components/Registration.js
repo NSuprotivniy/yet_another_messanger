@@ -1,5 +1,6 @@
 var extendConstructor = require('../utils/extendConstructor');
 var Eventable = require('../modules/Eventable');
+var jsonSender = require('../modules/JsonSender');
 
 var REGISTRATION_PAGE_SELECTOR = '.js-registration-page';
 var EMAIL_INPUT_SELECTOR = '.js-credentials-email';
@@ -48,6 +49,8 @@ loginConstructorPrototype.registration = function() {
         this._passwordConfirmationInput.value = '';
     }
 
+    var response = jsonSender.registration(name, email, password, passwordConfirmation);
+    localStorage.setItem("userUUID", response.uuid);
     this.trigger('registration');
 };
 

@@ -4,6 +4,7 @@ var Message = require('../components/Message');
 var templatesEngine = require('../modules/templatesEngine');
 var FileBuffer = require('../components/FilesBuffer');
 var jsonSender = require('../modules/JsonSender');
+var websocketInstance = require('../modules/WebsocketInstance');
 
 var ENTER_KEY_CODE = 13;
 
@@ -28,7 +29,8 @@ function ChatConstructor(model) {
     this._messageInput = templateResult.messageInput;
     this._messageList = templateResult.messageList;
 
-    this.model = model;
+    var response = jsonSender.getChat(model.uuid);
+    this.model = Object.assign(model, response.params);
 
     this._messages = [];
     this._messagesCount = 0;
@@ -39,6 +41,14 @@ function ChatConstructor(model) {
 
     this._fileBuffer = new FileBuffer();
     this._filesToAdd = [];
+    
+    for (let i = 0; i < model.messagesUUIDs.length; i++) {
+        var m = model.messagesUUIDs[i];
+        var response = jsonSender.getMessage(m);
+        this._addMessage(response.params);
+    };
+
+    websocketInstance.on("websocketMessage", this._addMessage, this);
 
     this._initEventable();
 }
@@ -65,17 +75,24 @@ chatConstructorPrototype._createMessage = function () {
         this._messageInput.value = '';
     }
     var response = jsonSender.create_msg(this.model.uuid, text);
-
-    var message = new Message({
+    var model = {
         id: this._messagesCount++,
         uuid: response.uuid,
         text: text,
         chatUUUID: this.model.uuid,
         creatorUUID: localStorage.getItem("userUUID")
-    });
-    message.render(this._messageList);
-    this._messageList.scrollTop = this._messageList.scrollHeight;
+    };
+    return this;
 };
+
+chatConstructorPrototype._addMessage = function (model) {
+    if (model.chatUUID === this.model.uuid) {
+        var message = new Message(model);
+        message.render(this._messageList);
+        this._messageList.scrollTop = this._messageList.scrollHeight;
+    }
+    return this;
+}
 
 chatConstructorPrototype._parseFiles = function () {
     var text = this._messageInput.value.trim();
@@ -138,6 +155,8 @@ chatConstructorPrototype.handleEvent = function (e) {
                     this._filesToChoose.innerHTML = '';
                     break;
             }
+        case 'websocketMessage':
+
     }
 };
 

@@ -27,14 +27,18 @@ $message-text-height: 40px;
 }
 
 .message_creator-name {
+  font-size: $fs_x-small;
+  margin: $offset;
   vertical-align: middle;
 }
 
 .message_created-at {
-
+  font-size: $fs_x-small;
+  margin: $offset;
 }
 
 .message_text {
+  font-size: $fs_x-large;
   min-height: $message-text-height;
   display: flex;
   align-items: center;

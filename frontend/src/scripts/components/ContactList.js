@@ -24,13 +24,10 @@ function ContactListConstructor() {
     this._contactList = document.querySelector(CONTACT_LIST_SELECTOR);
     this._chatAddContactList = document.querySelector(CHAT_ADD_CONTACT_LIST_SELECTOR);
     this._initEventable();
-    var response = jsonSender.getContacts("fingerprint");
-    if (response.status === 200) {
-        for (let i = 0; i < response.uuids.length; i++) {
-            this.createLocalItem({uuid: response.uuids[i], name: response.names[i]});
-        }
-    }
 
+    if (localStorage.getItem("userUUID") !== null) {
+        try { this.loadContacts(); } catch (e) {}
+    };
 }
 
 extendConstructor(ContactListConstructor, Eventable);
@@ -40,7 +37,7 @@ var contactListConstructorPrototype = ContactListConstructor.prototype;
 contactListConstructorPrototype.createLocalItem = function (contactItemData) {
     var itemMainContactList = new Contact(Object.assign(
         {
-            id: contactItemData.uuid,
+            id: itemsIdIterator,
         },
         contactItemData
     ), "main");
@@ -80,9 +77,7 @@ contactListConstructorPrototype.getItemsCount = function () {
  * @return {ContactListConstructor}
  */
 contactListConstructorPrototype.createItem = function (contactItemData) {
-
     var mail = contactItemData.email;
-    console.log(mail);
     var answer = jsonSender.createFriend("fingerprint",mail);
     contactItemData = Object.assign(contactItemData, {uuid: answer.params.uuid, name:answer.params.name});
     console.log(contactItemData);
@@ -91,6 +86,22 @@ contactListConstructorPrototype.createItem = function (contactItemData) {
    
 };
 
+
+contactListConstructorPrototype.loadContacts = function() {
+    var response = jsonSender.getContacts();
+    if (response.status === 200) {
+        for (let i = 0; i < response.uuids.length; i++) {
+            this.createLocalItem({uuid: response.uuids[i], name: response.names[i]});
+        }
+    }
+};
+
+contactListConstructorPrototype.clear = function() {
+    var items = this._items.slice();
+    items.forEach(function (i) {
+        i.remove();
+    });
+};
 
 /**
  * @param {Number} itemId

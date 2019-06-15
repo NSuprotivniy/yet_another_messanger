@@ -1,6 +1,6 @@
 @import "../../config/globals";
 
-$chat-height: 500px;
+$chat-height: 800px;
 
 .chat {
   width: 100%;
@@ -40,8 +40,7 @@ $chat-height: 500px;
 }
 
 .chat_files-to-choose {
-  flex: 1;
-  overflow: auto;
+  height: 64px;
   margin: $offset;
 }
 

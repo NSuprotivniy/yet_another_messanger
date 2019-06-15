@@ -2,6 +2,7 @@ var Eventable = require('../modules/Eventable');
 var extendConstructor = require('../utils/extendConstructor');
 var jsonSender = require('../modules/JsonSender');
 var ChatListItem = require('../components/ChatListItem');
+var websocketInstance = require('../modules/WebsocketInstance');
 
 var CHATS_LIST_SELECTOR = '.js-chats-list';
 var itemsIdIterator = 0;
@@ -19,13 +20,10 @@ function ChatListConstructor() {
 
     this._items = [];
     this._chatsList = document.querySelector(CHATS_LIST_SELECTOR);
-    var response = jsonSender.getChats();
-    console.log(response);
-    if (response.status === 200) {
-        for (let i = 0; i < response.uuids.length; i++) {
-            this.createItem({uuid: response.uuids[i], name: response.names[i]});
-        }
+    if (localStorage.getItem("userUUID") !== null) {
+        try { this.loadChats(); } catch (e) {}
     }
+    websocketInstance.on("websocketChat", this._addChat, this);
 }
 
 extendConstructor(ChatListConstructor, Eventable);
@@ -43,12 +41,18 @@ chatListConstructorPrototype.getItemsCount = function () {
  * @param {Object} chatsItemData
  * @return {ChatListConstructor}
  */
-chatListConstructorPrototype.createItem = function (chatsItemData) {
+chatListConstructorPrototype.createItem = function (model) {
+    var response = jsonSender.createChat(model.name, model.participantsUUIDs.map(function (p) {p.uuid}));
+    this.addItem(response).renderChatPage();
+    return this;
+};
+
+chatListConstructorPrototype.addItem = function (model) {
     var item = new ChatListItem(Object.assign(
         {
             id: itemsIdIterator++,
         },
-        chatsItemData
+        model
     ));
 
     this._items.push(item);
@@ -56,12 +60,27 @@ chatListConstructorPrototype.createItem = function (chatsItemData) {
     item
         .on('remove', this._onItemRemove, this)
         .on('openChat', this._openChat, this)
-        .render(this._chatsList)
-        .renderChatPage();
+        .render(this._chatsList);
 
     this.trigger('itemAdd', item);
 
-    return this;
+    return item;
+};
+
+chatListConstructorPrototype.loadChats = function() {
+    var response = jsonSender.getChats();
+    if (response.status === 200) {
+        for (let i = 0; i < response.uuids.length; i++) {
+            this.addItem({uuid: response.uuids[i], name: response.names[i]});
+        }
+    }
+};
+
+chatListConstructorPrototype.clear = function() {
+    var items = this._items.slice();
+    items.forEach(function (i) {
+       i.remove();
+    });
 };
 
 

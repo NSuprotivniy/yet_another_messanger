@@ -8,6 +8,7 @@ var SIDEBAR_CONTACTS_BUTTON_SELECTOR = ".js-sidebar-list_contacts";
 var SIDEBAR_FILES_BUTTON_SELECTOR = ".js-sidebar-list_files";
 var SIDEBAR_LOGIN_BUTTON_SELECTOR = ".js-sidebar-login";
 var SIDEBAR_REGISTRATION_BUTTON_SELECTOR = ".js-sidebar-registration";
+var SIDEBAR_LOGOUT_BUTTON_SELECTOR = ".js-sidebar-logout";
 
 var CHATS_PAGE_SELECTOR = ".js-chats-list-page";
 var FILES_PAGE_SELECTOR = ".js-files-page";
@@ -32,6 +33,7 @@ function SidebarConstructor() {
     this._sidebar_files_button = this._sidebar.querySelector(SIDEBAR_FILES_BUTTON_SELECTOR);
     this._sidebar_login_button = this._sidebar.querySelector(SIDEBAR_LOGIN_BUTTON_SELECTOR);
     this._sidebar_registraion_button = this._sidebar.querySelector(SIDEBAR_REGISTRATION_BUTTON_SELECTOR);
+    this._sidebar_logout_button = this._sidebar.querySelector(SIDEBAR_LOGOUT_BUTTON_SELECTOR);
 
     this._chats_page = document.querySelector(CHATS_PAGE_SELECTOR);
     this._contacts_page = document.querySelector(CONTACTS_PAGE_SELECTOR);
@@ -45,6 +47,13 @@ function SidebarConstructor() {
     this._sidebar_files_button.addEventListener('click', this);
     this._sidebar_login_button.addEventListener('click', this);
     this._sidebar_registraion_button.addEventListener('click', this);
+    this._sidebar_logout_button.addEventListener('click', this);
+
+    if (localStorage.getItem("userUUID") === null) {
+        this.setLoggedOut();
+    } else {
+        this.setLoggedOn();
+    }
 
     this._initEventable();
 }
@@ -72,11 +81,23 @@ sidebarConstructorPrototype.handleEvent = function (e) {
                 case this._sidebar_registraion_button:
                     this.setPage("registration");
                     break;
+                case this._sidebar_logout_button:
+                    this._setLoggedOutButtonVisibility();
+                    this.setLoggedOut();
+                    this.trigger("logoutButton");
+                    break;
             }
     }
 };
 
 sidebarConstructorPrototype.setPage = function (name) {
+    if (localStorage.getItem("userUUID") === null) {
+        this._setLoggedOutButtonVisibility();
+        if (name !== "login" && name !== "registration") {
+            name = "login";
+        };
+    }
+
     this._sidebar_chats_button.classList.remove(ACTIVE_MODIFICATOR);
     this._sidebar_contacts_button.classList.remove(ACTIVE_MODIFICATOR);
     this._sidebar_files_button.classList.remove(ACTIVE_MODIFICATOR);
@@ -115,6 +136,29 @@ sidebarConstructorPrototype.setPage = function (name) {
             this._registration_page.classList.remove(HIDDEN_MODIFICATOR);
             break;
     }
+};
+
+sidebarConstructorPrototype.setLoggedOn = function () {
+    this._sidebar_login_button.classList.add(HIDDEN_MODIFICATOR);
+    this._sidebar_registraion_button.classList.add(HIDDEN_MODIFICATOR);
+    this._sidebar_chats_button.classList.remove(HIDDEN_MODIFICATOR);
+    this._sidebar_contacts_button.classList.remove(HIDDEN_MODIFICATOR);
+    this._sidebar_files_button.classList.remove(HIDDEN_MODIFICATOR);
+    this._sidebar_logout_button.classList.remove(HIDDEN_MODIFICATOR);
+    this.setPage("chats");
+};
+
+sidebarConstructorPrototype._setLoggedOutButtonVisibility = function () {
+    this._sidebar_login_button.classList.remove(HIDDEN_MODIFICATOR);
+    this._sidebar_registraion_button.classList.remove(HIDDEN_MODIFICATOR);
+    this._sidebar_chats_button.classList.add(HIDDEN_MODIFICATOR);
+    this._sidebar_contacts_button.classList.add(HIDDEN_MODIFICATOR);
+    this._sidebar_files_button.classList.add(HIDDEN_MODIFICATOR);
+    this._sidebar_logout_button.classList.add(HIDDEN_MODIFICATOR);
+};
+
+sidebarConstructorPrototype.setLoggedOut = function () {
+    this.setPage("login");
 }
 
 module.exports = SidebarConstructor;

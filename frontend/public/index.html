@@ -76,11 +76,11 @@
         <div class="message_creator-avatar">
             <img class="js-message_creator-avatar">
         </div>
-        <div class="message_creator-name js-message_creator-name"></div>
+        <div class="message_text js-message_text"></div>
         <div class="message-footer">
+            <div class="message_creator-name js-message_creator-name"></div>
             <div class="message_created-at js-message_created-at"></div>
         </div>
-        <div class="message_text js-message_text"></div>
     </div>
 </script>
 
@@ -102,15 +102,16 @@
 <div class="main-wrapper">
     <div class="sidebar js-sidebar">
         <ul class="sidebar-list">
-            <li class="far fa-comment sidebar-list_chats js-sidebar-list_chats __active"></li>
-            <li class="far fa-address-book sidebar-list_contacts js-sidebar-list_contacts"></li>
-            <li class="far fa-file-alt sidebar-list_files js-sidebar-list_files"></li>
-            <li class="fas fa-sign-in-alt sidebar-login js-sidebar-login"></li>
-            <li class="fas fa-user-plus sidebar-registration js-sidebar-registration"></li>
+            <li class="far fa-comment sidebar-icon sidebar-list_chats js-sidebar-list_chats __active"></li>
+            <li class="far fa-address-book sidebar-icon sidebar-list_contacts js-sidebar-list_contacts"></li>
+            <li class="far fa-file-alt sidebar-icon sidebar-list_files js-sidebar-list_files"></li>
+            <li class="fas fa-sign-in-alt sidebar-icon sidebar-login js-sidebar-login"></li>
+            <li class="fas fa-user-plus sidebar-icon sidebar-registration js-sidebar-registration"></li>
+            <li class="fas fa-sign-out-alt sidebar-icon sidebar-logout js-sidebar-logout"></li>
         </ul>
     </div>
 
-    <div class="chats-list-page js-chats-list-page">
+    <div class="chats-list-page js-chats-list-page __hidden">
         <div class="chat-add">
             <div class="chat-add_input-w">
                 <input class="chat-add_input js-chats-chat-input" placeholder="Добавить" aria-label="Поле добавления чата" />
