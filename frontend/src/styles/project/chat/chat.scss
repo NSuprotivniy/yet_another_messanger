@@ -42,6 +42,7 @@ $chat-height: 800px;
 .chat_files-to-choose {
   height: 64px;
   margin: $offset;
+  overflow: auto;
 }
 
 .file-to-choose_id {

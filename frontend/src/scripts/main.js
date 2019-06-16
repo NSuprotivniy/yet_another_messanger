@@ -18,10 +18,12 @@ function init() {
             sidebar.setPage("login");
         });
 
+        var fileList = new FileList();
+
         var addChat = new AddChat();
         var chatList = new ChatList();
         addChat.on('newChat', function (chatData) {
-            chatList.createItem(chatData);
+            chatList._createItem(chatData);
             sidebar.setPage("chat");
         });
 
@@ -33,7 +35,7 @@ function init() {
         var contactList = new ContactList();
 
         addContact.on('newContact', function (contactData) {
-            contactList.createItem(contactData);
+            contactList._createItem(contactData);
         });
         contactList
             .on('itemChecked', function (contact) {
@@ -43,17 +45,18 @@ function init() {
                 addChat._onContactItemUnchecked(contact);
             });
 
-        var fileList = new FileList();
 
         login.on('login', function () {
             sidebar.setLoggedOn();
             chatList.loadChats();
             contactList.loadContacts();
+            fileList.load();
         });
         registration.on('registration', function () {
             sidebar.setLoggedOn();
             chatList.loadChats();
             contactList.loadContacts();
+            fileList.load();
         });
 
         sidebar.on("logoutButton", function () {
@@ -66,6 +69,8 @@ function init() {
         if (e.name === "LogonError") {
             login.resetSession();
             sidebar.setPage("login");
+        } else {
+            console.log(e);
         }
     }
 

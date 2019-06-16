@@ -41,7 +41,7 @@ chatListConstructorPrototype.getItemsCount = function () {
  * @param {Object} chatsItemData
  * @return {ChatListConstructor}
  */
-chatListConstructorPrototype.createItem = function (model) {
+chatListConstructorPrototype._createItem = function (model) {
     var response = jsonSender.createChat(model.name, model.participantsUUIDs.map(function (p) {p.uuid}));
     this.addItem(response).renderChatPage();
     return this;

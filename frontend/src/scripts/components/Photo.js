@@ -7,24 +7,25 @@ var templatesEngine = require('../modules/templatesEngine');
  * @implements {EventListener}
  * @constructor
  */
-function MessageConstructor(model) {
+function PhotoConstructor(model) {
     this._initEventable();
 
     this.model = model;
-    var templateResult = templatesEngine.message(model);
+    var templateResult = templatesEngine.photo(model);
     this._root = templateResult.root;
+
 
 }
 
-extendConstructor(MessageConstructor, Eventable);
+extendConstructor(PhotoConstructor, Eventable);
 
-var messageConstructorPrototype = MessageConstructor.prototype;
+var photoConstructorPrototype = PhotoConstructor.prototype;
 
 /**
  * @param {HTMLElement} parent
- * @return {MessageConstructor}
+ * @return {PhotoConstructor}
  */
-messageConstructorPrototype.render = function (parent) {
+photoConstructorPrototype.render = function (parent) {
     parent.appendChild(this._root);
     return this;
 };
@@ -32,18 +33,18 @@ messageConstructorPrototype.render = function (parent) {
 /**
  * @param {Event} e
  */
-messageConstructorPrototype.handleEvent = function (e) {
+photoConstructorPrototype.handleEvent = function (e) {
     switch (e.type) {}
 };
 
 
 /**
- * @return {MessageConstructor}
+ * @return {PhotoConstructor}
  */
-messageConstructorPrototype.remove = function () {
+photoConstructorPrototype.remove = function () {
     this._root.parentNode.removeChild(this._root);
     this.trigger('remove', this.model.id);
     return this;
 };
 
-module.exports = MessageConstructor;
+module.exports = PhotoConstructor;

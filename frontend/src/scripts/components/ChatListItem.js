@@ -24,7 +24,7 @@ function ChatListItemConstructor(model) {
     this._removeAction.addEventListener('click', this);
     this._name.addEventListener('click', this);
 
-    this._chatPage = new Chat(this.model);
+    this._chatPage;
 }
 
 extendConstructor(ChatListItemConstructor, Eventable);
@@ -41,6 +41,9 @@ chatListItemConstructorPrototype.render = function (parent) {
 };
 
 chatListItemConstructorPrototype.renderChatPage = function () {
+    if (!this._chatPage) {
+        this._chatPage = new Chat(this.model).render();
+    }
     this._chatPage.render();
     this.trigger('openChat', this.model.id);
     return this;

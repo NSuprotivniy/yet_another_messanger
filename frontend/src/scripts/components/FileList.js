@@ -15,10 +15,8 @@ var itemsIdIterator = 0;
  * @constructor
  */
 function FileListConstructor() {
-    /**
-     * @type {Array.<ChatsConstructor>}
-     * @private
-     */
+    this._initEventable();
+
     this._items = [];
     this._filePage = document.querySelector(FILE_PAGE_SELECTOR);
     this._fileList = this._filePage.querySelector(FILE_LIST_SELECTOR);
@@ -28,7 +26,9 @@ function FileListConstructor() {
 
     this._fileBuffer = new FileBuffer();
 
-    this._initEventable();
+    if (localStorage.getItem("userUUID") !== null) {
+        try { this.load(); } catch (e) {}
+    }
 }
 
 extendConstructor(FileListConstructor, Eventable);
@@ -42,11 +42,26 @@ fileListConstructorPrototype.getItemsCount = function () {
     return this._items.length;
 };
 
+fileListConstructorPrototype._addItem = function (model) {
+    var fileItem = new File(Object.assign(
+        {
+            id: itemsIdIterator++,
+        },
+        model
+    ));
+    fileItem
+        .on('remove', this._onItemRemove, this)
+        .render(this._fileList);
+    this._items.push(fileItem);
+    this._fileBuffer.addFile(fileItem.model);
+    this.trigger('fileAdd', fileItem.model);
+};
+
 /**
  * @param {Object} fileItemData
  * @return {FileListConstructor}
  */
-fileListConstructorPrototype.createItem = function () {
+fileListConstructorPrototype._createItem = function () {
     var files = this._fileInput.files;
     for (let i = 0; i < files.length; i++) {
         var file = files[i];
@@ -59,20 +74,9 @@ fileListConstructorPrototype.createItem = function () {
         var name = file.name;
         var base64 = btoa(result);
         
-        var uuid = jsonSender.upload_file(base64, name, 'fingerprint');
+        var uuid = jsonSender.upload_file(base64, name);
+        this._addItem({uuid: uuid, name: name});
 
-        var fileItem = new File(Object.assign(
-            {
-                id: uuid,
-                name: name,
-            },
-        ));
-        fileItem
-            .on('remove', this._onItemRemove, this)
-            .render(this._fileList);
-        this._items.push(fileItem);
-        this._fileBuffer.addFile(fileItem.model);
-        this.trigger('fileAdd', fileItem.model);
     };
     this._fileInput.value = "";
     return this;
@@ -81,9 +85,26 @@ fileListConstructorPrototype.createItem = function () {
 fileListConstructorPrototype.handleEvent = function (e) {
     switch (e.type) {
         case 'change':
-            this.createItem();
+            this._createItem();
             break;
     }
+};
+
+fileListConstructorPrototype.load = function() {
+    var response = jsonSender.getFiles();
+    for (let i = 0; i < response.uuids.length; i++) {
+        this._addItem({
+            uuid: response.uuids[i],
+            name: response.names[i].replace(/^\[+|\]+$/g, ''),
+        })
+    }
+};
+
+fileListConstructorPrototype.clear = function() {
+    var items = this._items.slice();
+    items.forEach(function (i) {
+        i.remove();
+    });
 };
 
 

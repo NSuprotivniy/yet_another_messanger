@@ -1,6 +1,7 @@
 var Eventable = require('../modules/Eventable');
 var extendConstructor = require('../utils/extendConstructor');
 var Message = require('../components/Message');
+var Photo = require('../components/Photo');
 var templatesEngine = require('../modules/templatesEngine');
 var FileBuffer = require('../components/FilesBuffer');
 var jsonSender = require('../modules/JsonSender');
@@ -32,6 +33,11 @@ function ChatConstructor(model) {
     var response = jsonSender.getChat(model.uuid);
     this.model = Object.assign(model, response.params);
 
+    this.avatars = model.avatarsUUIDs.map(function (uuid) {
+        var avatarResponse = jsonSender.getFile(uuid);
+        return avatarResponse.body;
+    });
+
     this._messages = [];
     this._messagesCount = 0;
 
@@ -62,7 +68,6 @@ var chatConstructorPrototype = ChatConstructor.prototype;
  * @return {ChatConstructor}
  */
 chatConstructorPrototype.render = function (parent) {
-
     this._chatPage.childNodes.forEach(function (c) {c.remove();});
     this._chatPage.appendChild(this._root);
     this.trigger('openChat', this.model.id);
@@ -87,15 +92,33 @@ chatConstructorPrototype._createMessage = function () {
 
 chatConstructorPrototype._addMessage = function (model) {
     if (model.chatUUID === this.model.uuid) {
-        var message = new Message(model);
+        var i = this.model.participantsUUIDs.indexOf(model.creatorUUID);
+        var message = new Message(Object.assign(
+            model,
+            {avatar : this.avatars[i]}
+        ));
         message.render(this._messageList);
+        var fileModels = this._parseFiles(model.text);
+        for (let i = 0; i < fileModels.length; i++) {
+            if (fileModels[i].name.endsWith(".jpg")) {
+                var file = jsonSender.getFile(fileModels[i].uuid);
+                var photo = new Photo(Object.assign(
+                    file,
+                    {
+                        chatUUUID: this.model.uuid,
+                        messageUUID: message.model.uuid,
+                        avatar: message.model.avatar
+                    }
+                ));
+                photo.render(this._messageList);
+            }
+        }
         this._messageList.scrollTop = this._messageList.scrollHeight;
     }
     return this;
-}
+};
 
-chatConstructorPrototype._parseFiles = function () {
-    var text = this._messageInput.value.trim();
+chatConstructorPrototype._parseFiles = function (text) {
     var fileModels = [];
     var myRegexp = /\[(.*?)\]/g;
     var match = myRegexp.exec(text);
@@ -107,7 +130,13 @@ chatConstructorPrototype._parseFiles = function () {
             }
         });
         match = myRegexp.exec(text);
-    }
+    };
+    return fileModels;
+};
+
+chatConstructorPrototype._parseFilesFromInput = function () {
+    var text = this._messageInput.value.trim();
+    var fileModels = this._parseFiles(text);
     this._filesToChoose.innerHTML = '';
     for (var i = fileModels.length; i-- ;) {
         var fileModel = fileModels[i];
@@ -143,7 +172,7 @@ chatConstructorPrototype.handleEvent = function (e) {
                         this._filesToChoose.innerHTML = '';
                         this._createMessage();
                     } else {
-                        this._parseFiles();
+                        this._parseFilesFromInput();
                     }
                     break;
             }

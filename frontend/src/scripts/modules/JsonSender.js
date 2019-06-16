@@ -46,9 +46,16 @@ function LogonError(message, cause) {
     this.stack = cause.stack;
 }
 
+var handleLogonError = function(xhr) {
+    var response = JSON.parse(xhr.responseText);
+    if (xhr.status === 400 && response.method === "logon_error") {
+        throw new LogonError();
+    }
+};
+
 var jsonSender = {
 
-    upload_file: function (body, name, fingerprint)
+    upload_file: function (body, name)
     {
         xhr = new XMLHttpRequest();
         xhr.open('POST', IP + '/file', false);
@@ -62,7 +69,7 @@ var jsonSender = {
             method: "create_user",
             params: params_json
         };
-        var result = send_json(main_json, fingerprint, null, 0);
+        var result = send_json(main_json, "fingerprint", null, 0);
         return result.params.uuid;
     },
 
@@ -128,10 +135,8 @@ var jsonSender = {
         xhr.open('GET', IP + '/chats', false);
         xhr.setRequestHeader("fingerprint", "fingerprint");
         xhr.send();
+        handleLogonError(xhr);
         var result = JSON.parse(xhr.responseText);
-        if (xhr.status === 400) {
-            throw Error("logon");
-        }
         return Object.assign({status: xhr.status}, result.params);
     },
 
@@ -145,21 +150,22 @@ var jsonSender = {
     getFile: function (uuid) {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', IP + '/file', false);
-        var result = send_json(null, cookies, fingerprint, uuid, 0);
-        return result;
+        xhr.setRequestHeader("fingerprint", "fingerprint");
+        xhr.setRequestHeader("uuid", uuid);
+        xhr.send();
+        handleLogonError(xhr);
+        var result = JSON.parse(xhr.responseText);
+        return Object.assign({status: xhr.status}, result.params);
     },
 
     getFiles: function () {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', IP + '/files', false);
-        var result = send_json(null, cookies, fingerprint, null, 0);
-        var uuids = [], names = [];
-        for (var i = 0; i < result.params.uuids.length; i++) {
-            uuids.push(result.params.uuids[i])
-            names.push(result.params.names[i]);
-        }
-        console.log({uuids, names});
-        return {uuids, names};
+        xhr.setRequestHeader("fingerprint", "fingerprint");
+        xhr.send();
+        handleLogonError(xhr);
+        var result = JSON.parse(xhr.responseText);
+        return Object.assign({status: xhr.status}, result.params);
     },
 
     getChat: function (uuid) {
@@ -195,7 +201,6 @@ var jsonSender = {
         xhr.send();
         var result = JSON.parse(xhr.responseText);
         console.log(result);
-        //var result = send_json(null, fingerprint, null, 0);
         var uuids = [], names = [];
         for (var i = 0; i < result.params.uuids.length; i++) {
             uuids.push(result.params.uuids[i])
@@ -248,12 +253,12 @@ var jsonSender = {
 
         xhr.setRequestHeader("fingerprint", fingerprint)
         xhr.send(JSON.stringify(main_json));
-    if (xhr.status != 200) {
-        return null;
-    } else {
-        var event = JSON.parse(xhr.responseText);
-        return event;
-    }
+        if (xhr.status !== 200) {
+            return null;
+        } else {
+            var event = JSON.parse(xhr.responseText);
+            return event;
+        }
     },
 
     create_msg(chat_uuid, text)

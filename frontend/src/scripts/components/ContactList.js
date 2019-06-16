@@ -76,7 +76,7 @@ contactListConstructorPrototype.getItemsCount = function () {
  * @param {Object} contactItemData
  * @return {ContactListConstructor}
  */
-contactListConstructorPrototype.createItem = function (contactItemData) {
+contactListConstructorPrototype._createItem = function (contactItemData) {
     var mail = contactItemData.email;
     var answer = jsonSender.createFriend("fingerprint",mail);
     contactItemData = Object.assign(contactItemData, {uuid: answer.params.uuid, name:answer.params.name});

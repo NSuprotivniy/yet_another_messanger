@@ -14,15 +14,8 @@ function FileConstructor(model) {
 
     this._root = templateResult.root;
     this._removeAction = templateResult.removeAction;
-    this._name = templateResult.name;
 
-    
-
-    this.model = {
-        id: model.id,
-        name: model.name,
-    };
-
+    this.model = model;
     this._removeAction.addEventListener('click', this);
 }
 

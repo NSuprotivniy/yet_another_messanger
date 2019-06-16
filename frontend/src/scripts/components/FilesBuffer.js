@@ -19,14 +19,14 @@ var fileBufferConstructorPrototype = FileBufferConstructor.prototype;
 
 fileBufferConstructorPrototype.addFile = function(file) {
     files.push(file);
-}
+};
 
 fileBufferConstructorPrototype.getFiles = function() {
     return files;
-}
+};
 
 fileBufferConstructorPrototype.removeFile = function(file) {
     files.push(file);
-}
+};
 
 module.exports = FileBufferConstructor;

@@ -1,3 +1,4 @@
+var jsonSender = require('../modules/JsonSender');
 
 var div = document.createElement('div');
 
@@ -84,7 +85,10 @@ var templatesEngine = {
         var text = root.querySelector('.js-message_text');
         var creatorName = root.querySelector('.js-message_creator-name');
         var createdAt = root.querySelector('.js-message_created-at');
-        var avatar = root.querySelector('.js-message_creator-avatar');
+        var avatar = root.querySelector('.js-message_creator-avatar-img');
+
+        var avatarBlock = root.querySelector('.js-message_creator-avatar');
+        var footerBlock = root.querySelector('.js-message-footer');
 
         if (data.text) {
             text.innerText = data.text;
@@ -98,7 +102,13 @@ var templatesEngine = {
             createdAt.innerText = date;
         }
         if (data.avatar) {
-            avatar.innerText = data.avatar;
+            avatar.setAttribute('src', "data:image/jpg;base64," + data.avatar);
+        }
+
+        if (data.creatorUUID === localStorage.getItem("userUUID")) {
+            root.classList.add("__right");
+            avatarBlock.classList.add("__right");
+            footerBlock.classList.add("__right");
         }
 
         return {
@@ -145,7 +155,43 @@ var templatesEngine = {
             root: root,
             id: id
         };
-    }
+    },
+
+    photo: function (data) {
+        var root = getTemplateRootNode('photo');
+        var img = root.querySelector('.js-photo_img');
+        var creatorName = root.querySelector('.js-photo_creator-name');
+        var createdAt = root.querySelector('.js-photo_created-at');
+        var avatar = root.querySelector('.js-photo_creator-avatar-img');
+
+        var avatarBlock = root.querySelector('.js-photo_creator-avatar');
+        var footerBlock = root.querySelector('.js-photo-footer');
+
+        if (data.body) {
+            img.setAttribute('src', "data:image/jpg;base64," + data.body);
+        }
+        if (data.creatorName) {
+            creatorName.innerText = data.creatorName;
+        }
+        if (data.createdAt) {
+            var myDate = new Date( data.createdAt);
+            var date = (myDate.getFullYear() + '-' +('0' + (myDate.getMonth()+1)).slice(-2)+ '-' +  myDate.getDate() + ' '+myDate.getHours()+ ':'+('0' + (myDate.getMinutes())).slice(-2)+ ':'+myDate.getSeconds());
+            createdAt.innerText = date;
+        }
+        if (data.avatar) {
+            avatar.setAttribute('src', "data:image/jpg;base64," + data.avatar);
+        }
+
+        if (data.creatorUUID === localStorage.getItem("userUUID")) {
+            root.classList.add("__right");
+            avatarBlock.classList.add("__right");
+            footerBlock.classList.add("__right");
+        }
+
+        return {
+            root: root
+        };
+    },
 };
 
 module.exports = templatesEngine;
